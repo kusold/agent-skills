@@ -15,10 +15,23 @@ skills/
   {skill-name}/           # kebab-case directory name
     SKILL.md              # Required: skill definition with YAML frontmatter
 docs/
-  {skill-name}/           # mirrors skills/ — one directory per skill
+  {skill-name}/
+    index.md              # mirrors skills/ — one directory per skill
 ```
 
 Every skill in `skills/{skill-name}/` has a corresponding `docs/{skill-name}/` directory for extended documentation (design notes, usage guides, etc.). When adding a new skill, create both directories; keep the names in sync.
+
+Docs pages are `index.md` (not `README.md`) because they are mounted into the Hugo site as leaf bundles (see [Documentation site](#documentation-site)). Give each one front matter for the site:
+
+```markdown
+---
+title: {Skill Title}
+description: {One-line summary}
+weight: {10, 20, 30, ... sidebar order}
+---
+```
+
+The page body has no `# H1` — the site renders the frontmatter title as the page heading. Relative links from docs pages to skill definitions (`../../skills/{skill-name}/SKILL.md`) work on both GitHub and the site.
 
 ### SKILL.md Format
 
@@ -58,3 +71,11 @@ Or install a specific skill:
 ```bash
 npx skills add kusold/agent-skills --skill vja-vikunja
 ```
+
+## Documentation site
+
+The Hugo site (hugo-book theme) lives in `site/` and is published to Cloudflare Pages at <https://kusold-agent-skills.pages.dev/>. `site/hugo.toml` mounts `../docs` and `../skills` as site content, so skill guides and `SKILL.md` references render from the repo as-is — nothing is copied into `site/` except the landing page (`site/content/_index.md`) and the theme submodule. The landing page's "Available Skills" list and the site sidebar are both generated from the docs pages' front matter, so a new skill appears on the site automatically once `docs/{skill-name}/index.md` exists.
+
+- Local preview: run `hugo server` from the `site/` directory (requires Hugo extended ≥ 0.158; on NixOS: `cd site && nix-shell -p hugo --run 'hugo server'`). Build from inside `site/` — invoking `hugo -s site` from the repo root writes some outputs to a stray root-level `public/`. Clone with `--recursive` to get the theme submodule (`site/themes/hugo-book`).
+- Deploy: pushing to `main` (or opening a PR) runs `.github/workflows/deploy-docs.yml`, which builds with Hugo and deploys to Cloudflare Pages via `wrangler-action` (project `kusold-agent-skills`; PRs get `<branch>.kusold-agent-skills.pages.dev` previews). The workflow needs the `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` repo secrets.
+- Known-benign build warnings: the portable-link warning for `docs/wiki-lint/index.md`'s link to `check_wiki.py` (a static file, not a content page — the link works) and the theme's own `.Page.IsNode` deprecation notice.

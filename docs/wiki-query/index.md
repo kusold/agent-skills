@@ -1,4 +1,8 @@
-# wiki-query
+---
+title: 'Wiki Query'
+description: 'Answer questions from wiki evidence with citations, and file durable analyses back into the wiki.'
+weight: 50
+---
 
 Answer questions against an [LLM Wiki](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f) — Andrej Karpathy's pattern for a persistent, LLM-maintained knowledge base of interlinked markdown pages — instead of re-reading raw sources. The skill reads `wiki/index.md` to find relevant pages, follows wikilinks, and synthesizes an answer where every claim cites the wiki page behind it (and through that page, the source summary and raw file). With your authorization or an established workflow, durable answers — comparisons, analyses, timelines, discovered connections — can be filed back into `wiki/analyses/` so explorations compound instead of disappearing into chat history.
 

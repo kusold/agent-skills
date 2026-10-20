@@ -1,0 +1,82 @@
+name: Deploy docs
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'docs/**'
+      - 'skills/**'
+      - 'site/**'
+      - '.gitmodules'
+      - '.github/workflows/deploy-docs.yml'
+  pull_request:
+    paths:
+      - 'docs/**'
+      - 'skills/**'
+      - 'content/**'
+      - 'layouts/**'
+      - 'assets/**'
+      - 'hugo.toml'
+      - '.gitmodules'
+      - 'themes/hugo-book'
+      - '.github/workflows/deploy-docs.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  deployments: write
+
+concurrency:
+  group: docs-deploy-${{ github.head_ref || github.ref_name }}
+  cancel-in-progress: true
+
+env:
+  # Cloudflare Pages project name; the site is served at
+  # https://${CLOUDFLARE_PROJECT}.pages.dev/
+  CLOUDFLARE_PROJECT: kusold-agent-skills
+
+jobs:
+  deploy:
+    # Skip fork PRs: they have no access to the Cloudflare secrets.
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.fork == false
+    runs-on: ubuntu-latest
+    env:
+      # Secrets can't be tested directly in step if-conditions.
+      HAS_CF_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN != '' }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          submodules: recursive
+          fetch-depth: 0 # full history for enableGitInfo (Last Modified links)
+
+      - name: Setup Hugo
+        uses: peaceiris/actions-hugo@v3
+        with:
+          hugo-version: '0.166.0'
+          extended: true
+
+      - name: Build
+        working-directory: site
+        run: hugo --minify --gc
+
+      - name: Deploy to Cloudflare Pages
+        if: env.HAS_CF_TOKEN == 'true'
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }} # creates GitHub deployment statuses
+          # Idempotent: the first run creates the project, later runs no-op.
+          preCommands: wrangler pages project create "$CLOUDFLARE_PROJECT" --production-branch=main || echo "project already exists"
+          # Pushes to main deploy to production; PRs deploy to a
+          # <branch>.<project>.pages.dev preview.
+          command: >-
+            pages deploy site/public
+            --project-name=${{ env.CLOUDFLARE_PROJECT }}
+            --branch=${{ github.head_ref || github.ref_name }}
+
+      - name: Warn about missing Cloudflare secrets
+        if: env.HAS_CF_TOKEN != 'true'
+        run: |
+          echo "::warning::CLOUDFLARE_API_TOKEN (and CLOUDFLARE_ACCOUNT_ID) secrets are not set — build only, deploy skipped. Add them under Settings → Secrets and variables → Actions."

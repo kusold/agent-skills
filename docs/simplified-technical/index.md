@@ -1,4 +1,8 @@
-# simplified-technical
+---
+title: 'Simplified Technical English'
+description: 'Write clear, unambiguous technical English based on ASD-STE100, applied at roughly 80% strictness.'
+weight: 10
+---
 
 Write clear, unambiguous technical English based on [Simplified Technical English](https://www.asd-ste100.org/) (ASD-STE100), applied at roughly 80% strictness. Turns dense, jargon-heavy text into writing that reads like a good maintenance manual: direct, short, and hard to misread.
 

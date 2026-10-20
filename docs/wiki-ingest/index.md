@@ -1,4 +1,8 @@
-# wiki-ingest
+---
+title: 'Wiki Ingest'
+description: 'Ingest sources into a persistent, LLM-maintained wiki following the LLM Wiki pattern.'
+weight: 30
+---
 
 Ingest sources into a persistent, LLM-maintained wiki following the [LLM Wiki](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f) pattern. Drop an article, paper, or note into `raw/` (or give a URL) and the agent reads it fully, discusses takeaways with you, writes a summary page, updates every entity and concept page it touches, and appends to the wiki log. Knowledge compounds: cross-references accumulate and contradictions get flagged instead of silently overwritten. This skill also bootstraps the wiki layout on first run.
 

@@ -1,3 +1,8 @@
 .DS_Store
 .vercel
 .env*.local
+
+# Hugo build output
+/site/public/
+/site/resources/
+.hugo_build.lock

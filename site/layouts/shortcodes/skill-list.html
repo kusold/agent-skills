@@ -1,0 +1,8 @@
+{{- /* Renders the Available Skills list from docs/{skill}/index.md front matter (title, description, weight). */ -}}
+<ul>
+  {{- range (where site.RegularPages "Section" "docs").ByWeight }}
+  <li><a href="{{ .RelPermalink }}">{{ .Title }}</a> — {{ with .Params.description }}{{ . }}{{ end }}</li>
+  {{- else }}
+  <li>No skills documented yet.</li>
+  {{- end }}
+</ul>

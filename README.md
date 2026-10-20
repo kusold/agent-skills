@@ -4,13 +4,15 @@ A collection of skills for AI coding agents. Skills are packaged instructions an
 
 Skills follow the [Agent Skills](https://agentskills.io/) format.
 
+Browse the full documentation at **[kusold-agent-skills.pages.dev](https://kusold-agent-skills.pages.dev/)** — built from this repo with [Hugo](https://gohugo.io/) (hugo-book theme) and deployed to [Cloudflare Pages](https://pages.cloudflare.com/) on every push to `main`.
+
 ## Available Skills
 
-- **[vja-vikunja](docs/vja-vikunja/)** — Manage Vikunja tasks from the command line using `vja`, the CLI client for the self-hosted task manager [Vikunja](https://vikunja.io).
-- **[simplified-technical](docs/simplified-technical/)** — Write or rewrite text in Simplified Technical English (ASD-STE100) at roughly 80% strictness: short sentences, clear verbs, active voice, and precise terminology.
-- **[wiki-ingest](docs/wiki-ingest/)** — Add sources to an LLM-maintained wiki, preserving provenance and flagging conflicting claims.
-- **[wiki-query](docs/wiki-query/)** — Answer questions from wiki evidence and optionally save durable analyses.
-- **[wiki-lint](docs/wiki-lint/)** — Check wiki links, coverage, and consistency, then apply authorized fixes.
+- **[vja-vikunja](docs/vja-vikunja/index.md)** — Manage Vikunja tasks from the command line using `vja`, the CLI client for the self-hosted task manager [Vikunja](https://vikunja.io).
+- **[simplified-technical](docs/simplified-technical/index.md)** — Write or rewrite text in Simplified Technical English (ASD-STE100) at roughly 80% strictness: short sentences, clear verbs, active voice, and precise terminology.
+- **[wiki-ingest](docs/wiki-ingest/index.md)** — Add sources to an LLM-maintained wiki, preserving provenance and flagging conflicting claims.
+- **[wiki-query](docs/wiki-query/index.md)** — Answer questions from wiki evidence and optionally save durable analyses.
+- **[wiki-lint](docs/wiki-lint/index.md)** — Check wiki links, coverage, and consistency, then apply authorized fixes.
 
 ## Installation
 
@@ -37,7 +39,8 @@ skills/
     scripts/              # Helper scripts for automation (optional)
     references/           # Supporting documentation (optional)
 docs/
-  {skill-name}/           # extended documentation for the skill
+  {skill-name}/
+    index.md              # extended documentation for the skill (rendered on the docs site)
 ```
 
 ## License

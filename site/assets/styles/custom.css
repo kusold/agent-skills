@@ -234,6 +234,12 @@
   color: var(--code-love);
 }
 
+/* leading command word of a plain bash line
+   (layouts/_default/_markup/render-codeblock-bash.html) */
+.chroma .cmd {
+  color: var(--code-rose);
+}
+
 .chroma .ge {
   font-style: italic;
 }

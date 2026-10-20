@@ -1,0 +1,17 @@
+{{/*
+  Bash code blocks. Chroma's bash lexer leaves plain command words
+  (npx, vja, git …) untokenized, so bare command lines — most of this
+  repo's examples — rendered with no color at all. Highlight normally,
+  then wrap the leading bare word of each line in a .cmd span (styled
+  rose in assets/styles/custom.css). Lines that already start with a
+  token (comments, strings, builtins) begin with a nested <span>, so
+  they never match the pattern and are left untouched.
+*/}}
+{{ $opts := merge .Options (dict "noClasses" false) }}
+{{/*
+  transform.Highlight returns the complete block (div.highlight >
+  pre.chroma > code.language-bash) with the site's class-based config,
+  so its output can be re-emitted as-is after the .cmd rewrite.
+*/}}
+{{ $code := transform.Highlight .Inner .Type $opts }}
+{{ replaceRE `(<span class="cl">)([ \t]*)([A-Za-z][A-Za-z0-9_.-]*)` `${1}${2}<span class="cmd">${3}</span>` $code | safeHTML }}

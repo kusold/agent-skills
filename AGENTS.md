@@ -14,7 +14,11 @@ A collection of agent skills following the [Agent Skills](https://agentskills.io
 skills/
   {skill-name}/           # kebab-case directory name
     SKILL.md              # Required: skill definition with YAML frontmatter
+docs/
+  {skill-name}/           # mirrors skills/ — one directory per skill
 ```
+
+Every skill in `skills/{skill-name}/` has a corresponding `docs/{skill-name}/` directory for extended documentation (design notes, usage guides, etc.). When adding a new skill, create both directories; keep the names in sync.
 
 ### SKILL.md Format
 

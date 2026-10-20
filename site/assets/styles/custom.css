@@ -32,6 +32,16 @@
   --color-accent-important: #907aa9; /* iris */
   --color-accent-warning:   #ea9d34; /* gold */
   --color-accent-caution:   #b4637a; /* love */
+
+  /* Chroma syntax tokens (below) — Dawn roles */
+  --code-love:   #b4637a; /* love */
+  --code-pine:   #286983; /* pine */
+  --code-foam:   #56949f; /* foam */
+  --code-rose:   #d7827e; /* rose */
+  --code-iris:   #907aa9; /* iris */
+  --code-gold:   #ea9d34; /* gold */
+  --code-subtle: #797593; /* subtle */
+  --code-muted:  #9893a5; /* muted */
 }
 
 /* Rosé Pine — forced dark */
@@ -53,6 +63,16 @@
   --color-accent-important: #c4a7e7; /* iris */
   --color-accent-warning:   #f6c177; /* gold */
   --color-accent-caution:   #eb6f92; /* love */
+
+  /* Chroma syntax tokens (below) — base roles */
+  --code-love:   #eb6f92; /* love */
+  --code-pine:   #31748f; /* pine */
+  --code-foam:   #9ccfd8; /* foam */
+  --code-rose:   #ebbcba; /* rose */
+  --code-iris:   #c4a7e7; /* iris */
+  --code-gold:   #f6c177; /* gold */
+  --code-subtle: #908caa; /* subtle */
+  --code-muted:  #6e6a86; /* muted */
 }
 
 /* Rosé Pine — auto dark */
@@ -75,6 +95,16 @@
     --color-accent-important: #c4a7e7; /* iris */
     --color-accent-warning:   #f6c177; /* gold */
     --color-accent-caution:   #eb6f92; /* love */
+
+    /* Chroma syntax tokens (below) — base roles */
+    --code-love:   #eb6f92; /* love */
+    --code-pine:   #31748f; /* pine */
+    --code-foam:   #9ccfd8; /* foam */
+    --code-rose:   #ebbcba; /* rose */
+    --code-iris:   #c4a7e7; /* iris */
+    --code-gold:   #f6c177; /* gold */
+    --code-subtle: #908caa; /* subtle */
+    --code-muted:  #6e6a86; /* muted */
   }
 }
 
@@ -97,4 +127,117 @@
 
 .book-skill-source code {
   font-size: inherit;
+}
+
+/*
+  Chroma syntax highlighting (markup.highlight.noClasses = false in
+  hugo.toml). The token → role mapping follows the official Chroma styles
+  (hugo gen chromastyles --style=rose-pine[-dawn]); each rule points at the
+  --code-* variables declared in the palette blocks above, so light and
+  dark share this one set of rules. The block itself keeps the theme's
+  pre styling (surface background, padding).
+*/
+/* keywords, types, escapes */
+.chroma .k,
+.chroma .kc,
+.chroma .kd,
+.chroma .kp,
+.chroma .kr,
+.chroma .kt,
+.chroma .ne,
+.chroma .se {
+  color: var(--code-pine);
+}
+
+/* namespace keywords, subheadings */
+.chroma .kn,
+.chroma .gu {
+  color: var(--code-iris);
+}
+
+/* names: functions, variables, tags, builtins, attributes */
+.chroma .n,
+.chroma .na,
+.chroma .ni,
+.chroma .nl,
+.chroma .nn,
+.chroma .py,
+.chroma .nt,
+.chroma .nb,
+.chroma .bp,
+.chroma .nv,
+.chroma .vc,
+.chroma .vg,
+.chroma .vi,
+.chroma .vm,
+.chroma .nf,
+.chroma .fm {
+  color: var(--code-rose);
+}
+
+/* classes, inserted diff lines */
+.chroma .nc,
+.chroma .gi {
+  color: var(--code-foam);
+}
+
+/* strings, numbers, constants, dates */
+.chroma .no,
+.chroma .l,
+.chroma .ld,
+.chroma .s,
+.chroma .sa,
+.chroma .sb,
+.chroma .sc,
+.chroma .dl,
+.chroma .sd,
+.chroma .s2,
+.chroma .sh,
+.chroma .si,
+.chroma .sx,
+.chroma .sr,
+.chroma .s1,
+.chroma .ss,
+.chroma .m,
+.chroma .mb,
+.chroma .mf,
+.chroma .mh,
+.chroma .mi,
+.chroma .il,
+.chroma .mo {
+  color: var(--code-gold);
+}
+
+/* operators, punctuation, decorators */
+.chroma .nd,
+.chroma .o,
+.chroma .ow,
+.chroma .or,
+.chroma .p {
+  color: var(--code-subtle);
+}
+
+/* comments */
+.chroma .c,
+.chroma .ch,
+.chroma .cm,
+.chroma .c1,
+.chroma .cs,
+.chroma .cp,
+.chroma .cpf {
+  color: var(--code-muted);
+}
+
+/* errors, deleted diff lines */
+.chroma .err,
+.chroma .gd {
+  color: var(--code-love);
+}
+
+.chroma .ge {
+  font-style: italic;
+}
+
+.chroma .gs {
+  font-weight: bold;
 }

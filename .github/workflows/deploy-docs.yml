@@ -68,7 +68,14 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           gitHubToken: ${{ secrets.GITHUB_TOKEN }} # creates GitHub deployment statuses
           # Idempotent: the first run creates the project, later runs no-op.
-          preCommands: wrangler pages project create "$CLOUDFLARE_PROJECT" --production-branch=main || echo "project already exists"
+          # Only an existing project is tolerated; auth/permission failures
+          # must fail loudly instead of being masked as "already exists".
+          preCommands: |
+            if wrangler pages project list | grep -q "$CLOUDFLARE_PROJECT"; then
+              echo "project '$CLOUDFLARE_PROJECT' already exists"
+            else
+              wrangler pages project create "$CLOUDFLARE_PROJECT" --production-branch=main
+            fi
           # Pushes to main deploy to production; PRs deploy to a
           # <branch>.<project>.pages.dev preview.
           command: >-

@@ -6,12 +6,8 @@ on:
     paths:
       - 'docs/**'
       - 'skills/**'
-      - 'content/**'
-      - 'layouts/**'
-      - 'assets/**'
-      - 'hugo.toml'
+      - 'site/**'
       - '.gitmodules'
-      - 'themes/hugo-book' # submodule gitlink
       - '.github/workflows/deploy-docs.yml'
   pull_request:
     paths:
@@ -61,7 +57,7 @@ jobs:
           extended: true
 
       - name: Build
-        run: hugo --minify --gc
+        run: hugo --minify --gc -s site
 
       - name: Deploy to Cloudflare Pages
         if: env.HAS_CF_TOKEN == 'true'
@@ -75,7 +71,7 @@ jobs:
           # Pushes to main deploy to production; PRs deploy to a
           # <branch>.<project>.pages.dev preview.
           command: >-
-            pages deploy public
+            pages deploy site/public
             --project-name=${{ env.CLOUDFLARE_PROJECT }}
             --branch=${{ github.head_ref || github.ref_name }}
 

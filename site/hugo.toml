@@ -4,8 +4,8 @@ theme = 'hugo-book'
 enableGitInfo = true
 disableKinds = ['taxonomy', 'term']
 
-# The site renders the repo as-is: docs/ and skills/ are mounted as content
-# instead of being copied or symlinked into a content/ directory.
+# The site renders the repo as-is: ../docs and ../skills are mounted as
+# content instead of being copied or symlinked into a content/ directory.
 # NOTE: defining mounts discards Hugo's defaults, so 'content' must be
 # redeclared explicitly.
 [module]
@@ -13,14 +13,14 @@ disableKinds = ['taxonomy', 'term']
     source = 'content'
     target = 'content'
   [[module.mounts]]
-    source = 'docs'
+    source = '../docs'
     target = 'content/docs'
   [[module.mounts]]
-    source = 'skills'
+    source = '../skills'
     target = 'content/skills'
   # Publish the bundled wiki-lint scripts so docs can link to the raw files.
   [[module.mounts]]
-    source = 'skills/wiki-lint/scripts'
+    source = '../skills/wiki-lint/scripts'
     target = 'static/skills/wiki-lint/scripts'
 
 [markup.goldmark.renderer]

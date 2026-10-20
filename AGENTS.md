@@ -74,8 +74,8 @@ npx skills add kusold/agent-skills --skill vja-vikunja
 
 ## Documentation site
 
-The repo root is a Hugo site (hugo-book theme) published to Cloudflare Pages at <https://kusold-agent-skills.pages.dev/>. There is no separate site directory: `hugo.toml` mounts `docs/` and `skills/` as site content, so skill guides and `SKILL.md` references render from the repo as-is.
+The Hugo site (hugo-book theme) lives in `site/` and is published to Cloudflare Pages at <https://kusold-agent-skills.pages.dev/>. `site/hugo.toml` mounts `../docs` and `../skills` as site content, so skill guides and `SKILL.md` references render from the repo as-is — nothing is copied into `site/` except the landing page (`site/content/_index.md`) and the theme submodule.
 
-- Local preview: `hugo server` from the repo root (requires Hugo extended ≥ 0.158; on NixOS: `nix-shell -p hugo --run 'hugo server'`). Clone with `--recursive` to get the theme submodule (`themes/hugo-book`).
+- Local preview: `hugo server -s site` from the repo root (requires Hugo extended ≥ 0.158; on NixOS: `nix-shell -p hugo --run 'hugo server -s site'`). Clone with `--recursive` to get the theme submodule (`site/themes/hugo-book`).
 - Deploy: pushing to `main` (or opening a PR) runs `.github/workflows/deploy-docs.yml`, which builds with Hugo and deploys to Cloudflare Pages via `wrangler-action` (project `kusold-agent-skills`; PRs get `<branch>.kusold-agent-skills.pages.dev` previews). The workflow needs the `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` repo secrets.
 - Known-benign build warnings: the portable-link warning for `docs/wiki-lint/index.md`'s link to `check_wiki.py` (a static file, not a content page — the link works) and the theme's own `.Page.IsNode` deprecation notice.

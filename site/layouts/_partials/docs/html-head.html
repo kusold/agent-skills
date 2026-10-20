@@ -10,6 +10,48 @@ https://github.com/alex-shpak/hugo-book
 <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#191724">
 <meta name="color-scheme" content="light dark">
 
+<!-- Apply the saved theme choice before first paint. "auto" (system) is the
+     default and matches data-theme="auto" rendered server-side, so this only
+     matters for visitors who picked light/dark in the sidebar dropdown
+     (site/layouts/_partials/docs/inject/menu-before.html). -->
+<script>
+  (function () {
+    var theme = "auto";
+    try {
+      var stored = localStorage.getItem("book-theme");
+      if (stored === "light" || stored === "dark" || stored === "auto") theme = stored;
+    } catch (e) { /* localStorage unavailable */ }
+
+    var media = window.matchMedia("(prefers-color-scheme: dark)");
+
+    function apply(value) {
+      theme = value;
+      document.documentElement.dataset.theme = theme;
+      // The theme-color metas above are media-keyed to the OS scheme; repoint
+      // both at the resolved background so browser chrome follows the choice.
+      var color = theme === "dark" || (theme === "auto" && media.matches)
+        ? "#191724"  /* Rosé Pine base */
+        : "#faf4ed"; /* Rosé Pine Dawn base */
+      var metas = document.querySelectorAll('meta[name="theme-color"]');
+      for (var i = 0; i < metas.length; i++) metas[i].setAttribute("content", color);
+    }
+
+    apply(theme);
+    // Track OS scheme flips while in system mode (colors follow via the
+    // prefers-color-scheme media query; this keeps the metas in step).
+    media.addEventListener("change", function () { apply(theme); });
+
+    window.bookTheme = {
+      value: function () { return theme; },
+      set: function (value) {
+        if (value !== "light" && value !== "dark" && value !== "auto") return;
+        apply(value);
+        try { localStorage.setItem("book-theme", value); } catch (e) {}
+      }
+    };
+  })();
+</script>
+
 {{- with .Page.Params.BookHref -}}
   <meta http-equiv="Refresh" content="0; url='{{ . }}'" />
 {{- end -}}

@@ -79,6 +79,28 @@
 }
 
 /*
+  Theme selector at the top of the sidebar menu
+  (site/layouts/_partials/docs/inject/menu-before.html). Mirrors the search
+  input styling from the theme's book.css; the variables above re-tint it
+  for whichever theme is active.
+*/
+.book-theme-select {
+  position: relative;
+  margin: var(--space-8) 0;
+}
+
+.book-theme-select select {
+  width: 100%;
+  padding: var(--space-8);
+
+  border: var(--space-1) solid var(--gray-200);
+  border-radius: var(--border-radius);
+
+  background: var(--gray-100);
+  color: var(--body-font-color);
+}
+
+/*
   Source link at the top of docs/{skill}/ pages
   (site/layouts/_partials/docs/inject/content-before.html).
 */

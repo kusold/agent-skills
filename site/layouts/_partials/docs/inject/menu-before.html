@@ -1,0 +1,21 @@
+{{- /* Theme selector: System (default) / Light / Dark. The choice is applied
+       before first paint and persisted by the inline script in
+       docs/html-head.html, which exposes it as window.bookTheme. */ -}}
+<div class="book-theme-select hidden">
+  <select id="book-theme-select" aria-label="Theme">
+    <option value="auto">System</option>
+    <option value="light">Light</option>
+    <option value="dark">Dark</option>
+  </select>
+</div>
+<script>
+  (function () {
+    var select = document.getElementById("book-theme-select");
+    select.value = window.bookTheme.value();
+    select.addEventListener("change", function () {
+      window.bookTheme.set(select.value);
+    });
+    // Hidden until JS so no-script visitors don't see a dead dropdown.
+    document.querySelector(".book-theme-select").classList.remove("hidden");
+  })();
+</script>

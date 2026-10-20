@@ -1,0 +1,15 @@
+{
+  // Cloudflare Workers project name; the site is served at
+  // https://<name>.<account>.workers.dev/
+  "name": "kusold-agent-skills",
+  // Set to the date this project was created (YYYY-MM-DD).
+  "compatibility_date": "2026-10-20",
+  "build": {
+    "command": "chmod a+x build.sh && ./build.sh"
+  },
+  "assets": {
+    // The Hugo project lives in site/, so its output does too.
+    "directory": "./site/public",
+    "not_found_handling": "404-page"
+  }
+}

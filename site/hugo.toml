@@ -10,6 +10,13 @@ disableKinds = ['taxonomy', 'term']
   page = ['html']
   section = ['html']
 
+# Cache processed images outside the output tree; pairs with HUGO_CACHEDIR
+# exported by build.sh
+# (https://gohugo.io/host-and-deploy/deploy-to-cloudflare/).
+[caches]
+  [caches.images]
+    dir = ':cacheDir/images'
+
 # The site renders the repo as-is: ../docs and ../skills are mounted as
 # content instead of being copied or symlinked into a content/ directory.
 # NOTE: defining mounts discards Hugo's defaults, so 'content' must be

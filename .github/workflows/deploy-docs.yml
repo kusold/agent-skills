@@ -28,7 +28,7 @@ concurrency:
 
 env:
   # Cloudflare Pages project name; the site is served at
-  # https://${CLOUDFLARE_PROJECT}.pages.dev/
+  # https://skills.mikekusold.com/ (custom domain)
   CLOUDFLARE_PROJECT: kusold-agent-skills
 
 jobs:

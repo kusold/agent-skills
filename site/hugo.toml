@@ -1,4 +1,4 @@
-baseURL = 'https://kusold-agent-skills.pages.dev/'
+baseURL = 'https://skills.mikekusold.com/'
 title = 'Agent Skills'
 theme = 'hugo-book'
 enableGitInfo = true

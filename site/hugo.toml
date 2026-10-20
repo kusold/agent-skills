@@ -41,6 +41,12 @@ disableKinds = ['taxonomy', 'term']
   # Needed by the theme's shortcodes (mermaid, katex, tabs).
   unsafe = true
 
+# Class-based Chroma output instead of the default inline (monokai) styles,
+# so code blocks are themed by assets/styles/custom.css with the Rosé Pine
+# palette (Dawn in light mode, Rosé Pine in dark).
+[markup.highlight]
+  noClasses = false
+
 [params]
   # Sidebar is built from the /docs section.
   BookSection = 'docs'

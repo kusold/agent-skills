@@ -4,7 +4,7 @@ A collection of skills for AI coding agents. Skills are packaged instructions an
 
 Skills follow the [Agent Skills](https://agentskills.io/) format.
 
-Browse the full documentation at **[kusold-agent-skills.pages.dev](https://kusold-agent-skills.pages.dev/)** — built from this repo with [Hugo](https://gohugo.io/) (hugo-book theme) and deployed to [Cloudflare](https://workers.cloudflare.com/) on every push to `main`.
+Browse the full documentation at **[skills.mikekusold.com](https://skills.mikekusold.com/)** — built from this repo with [Hugo](https://gohugo.io/) (hugo-book theme) and deployed to [Cloudflare](https://workers.cloudflare.com/) on every push to `main`.
 
 ## Available Skills
 

@@ -1,0 +1,44 @@
+{{- /* Shadow of the theme partial: identical resolution, except links to a
+       skill's SKILL.md render as the GitHub blob view (BookRepo + /blob/main/)
+       instead of the mounted content page. Re-sync from the theme if the
+       submodule updates. */ -}}
+{{- $destination := .Destination -}}
+{{- $url := urls.Parse .Destination -}}
+
+{{- $isRemote := $url.IsAbs -}}
+{{- $isFragment := strings.HasPrefix .Destination "#" -}}
+
+{{- if and (not $isRemote) (not $isFragment) -}}
+  {{- $path := strings.TrimPrefix "./" $url.Path -}}
+  {{- $isSkill := and (strings.HasSuffix $path "/SKILL.md") .Page.Site.Params.BookRepo -}}
+  {{- $path = strings.TrimSuffix ".md" $path -}}
+  {{- $path = strings.TrimSuffix "/_index" $path -}}
+
+  {{- with (.Page.GetPage $path) -}}
+    {{- if $isSkill -}}
+      {{- $destination = printf "%s/blob/main/%s" $.Page.Site.Params.BookRepo .File.Path -}}
+    {{- else -}}
+      {{- $destination = .RelPermalink -}}
+    {{- end -}}
+  {{- else with (.Page.Resources.Get $path) -}}
+    {{- $destination = .RelPermalink -}}
+  {{- else with (resources.Get $path) -}}
+    {{- $destination = .RelPermalink -}}
+  {{- else -}}
+    {{- $mode := .Page.Site.Params.BookPortableLinks -}}
+    {{- $message := printf "Reference '%s' not found in '%s'" .Destination .Page.RelPermalink -}}
+    {{- if eq $mode "warning" -}}
+    {{- warnf $message -}}
+    {{- else if eq $mode "error" -}}
+    {{- errorf $message -}}
+    {{- end -}}
+  {{- end -}}
+
+  {{- with $url.RawQuery -}}
+    {{- $destination = print $destination "?" . -}}
+  {{- end -}}
+  {{- with $url.Fragment -}}
+    {{- $destination = print $destination "#" . -}}
+  {{- end -}}
+{{- end -}}
+{{- return $destination -}}

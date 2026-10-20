@@ -7,11 +7,8 @@ A collection of skills for AI coding agents. Skills are packaged instructions an
 
 ## Available Skills
 
-- [Simplified Technical English](/docs/simplified-technical/) — write or rewrite text in Simplified Technical English (ASD-STE100) at roughly 80% strictness
-- [Vja — Vikunja CLI Task Manager](/docs/vja-vikunja/) — manage Vikunja tasks from the command line
-- [Wiki Ingest](/docs/wiki-ingest/) — add sources to an LLM-maintained wiki, preserving provenance and flagging conflicts
-- [Wiki Query](/docs/wiki-query/) — answer questions from wiki evidence and optionally save durable analyses
-- [Wiki Lint](/docs/wiki-lint/) — check wiki links, coverage, and consistency, then apply authorized fixes
+<!-- Generated from docs/{skill}/index.md front matter by the skill-list shortcode. -->
+{{< skill-list >}}
 
 ## Installation
 

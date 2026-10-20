@@ -74,7 +74,7 @@ npx skills add kusold/agent-skills --skill vja-vikunja
 
 ## Documentation site
 
-The Hugo site (hugo-book theme) lives in `site/` and is published to Cloudflare Pages at <https://kusold-agent-skills.pages.dev/>. `site/hugo.toml` mounts `../docs` and `../skills` as site content, so skill guides and `SKILL.md` references render from the repo as-is — nothing is copied into `site/` except the landing page (`site/content/_index.md`) and the theme submodule.
+The Hugo site (hugo-book theme) lives in `site/` and is published to Cloudflare Pages at <https://kusold-agent-skills.pages.dev/>. `site/hugo.toml` mounts `../docs` and `../skills` as site content, so skill guides and `SKILL.md` references render from the repo as-is — nothing is copied into `site/` except the landing page (`site/content/_index.md`) and the theme submodule. The landing page's "Available Skills" list and the site sidebar are both generated from the docs pages' front matter, so a new skill appears on the site automatically once `docs/{skill-name}/index.md` exists.
 
 - Local preview: run `hugo server` from the `site/` directory (requires Hugo extended ≥ 0.158; on NixOS: `cd site && nix-shell -p hugo --run 'hugo server'`). Build from inside `site/` — invoking `hugo -s site` from the repo root writes some outputs to a stray root-level `public/`. Clone with `--recursive` to get the theme submodule (`site/themes/hugo-book`).
 - Deploy: pushing to `main` (or opening a PR) runs `.github/workflows/deploy-docs.yml`, which builds with Hugo and deploys to Cloudflare Pages via `wrangler-action` (project `kusold-agent-skills`; PRs get `<branch>.kusold-agent-skills.pages.dev` previews). The workflow needs the `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` repo secrets.

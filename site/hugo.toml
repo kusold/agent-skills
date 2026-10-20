@@ -19,6 +19,9 @@ disableKinds = ['taxonomy', 'term']
     source = 'content'
     target = 'content'
   [[module.mounts]]
+    source = 'layouts'
+    target = 'layouts'
+  [[module.mounts]]
     source = '../docs'
     target = 'content/docs'
   [[module.mounts]]

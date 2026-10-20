@@ -60,6 +60,18 @@ jobs:
         working-directory: site
         run: hugo --minify --gc
 
+      - name: Ensure Cloudflare Pages project exists
+        if: env.HAS_CF_TOKEN == 'true'
+        run: |
+          if npx --yes wrangler@4 pages project list | grep -q "$CLOUDFLARE_PROJECT"; then
+            echo "project '$CLOUDFLARE_PROJECT' already exists"
+          else
+            npx --yes wrangler@4 pages project create "$CLOUDFLARE_PROJECT" --production-branch=main
+          fi
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
       - name: Deploy to Cloudflare Pages
         if: env.HAS_CF_TOKEN == 'true'
         uses: cloudflare/wrangler-action@v4
@@ -67,15 +79,6 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           gitHubToken: ${{ secrets.GITHUB_TOKEN }} # creates GitHub deployment statuses
-          # Idempotent: the first run creates the project, later runs no-op.
-          # Only an existing project is tolerated; auth/permission failures
-          # must fail loudly instead of being masked as "already exists".
-          preCommands: |
-            if wrangler pages project list | grep -q "$CLOUDFLARE_PROJECT"; then
-              echo "project '$CLOUDFLARE_PROJECT' already exists"
-            else
-              wrangler pages project create "$CLOUDFLARE_PROJECT" --production-branch=main
-            fi
           # Pushes to main deploy to production; PRs deploy to a
           # <branch>.<project>.pages.dev preview.
           command: >-

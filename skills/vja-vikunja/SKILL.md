@@ -12,13 +12,23 @@ Manage tasks on a Vikunja server using the `vja` command-line interface. `vja` i
 
 ## Prerequisites
 
-Check if `vja` is installed and authenticated:
+Check the installed version, then run a read-only command to check access:
 
 ```bash
-vja ls 2>/dev/null
+vja --version
+vja ls
 ```
 
-If this fails, prompt the user to install and configure.
+Do not hide errors: distinguish a missing executable, incompatible API URL, authentication failure, and connection failure before suggesting a fix. These examples were checked against `vja 6.0.3`, which requires Vikunja >= 2.5.0 and an API URL ending in `/api/v2`. For other versions, consult `vja <command> --help` and the [upstream documentation](https://github.com/cernst72/vja). Do not change server configuration or install software unless the user requests it.
+
+Configuration lookup order:
+
+1. `$VJA_CONFIGDIR/config.rc`
+2. `$XDG_CONFIG_HOME/vja/config.rc`
+3. `~/.config/vja/config.rc`
+4. `~/.vjacli/vja.rc` (legacy fallback)
+
+Use the existing configuration location. Do not print credentials or token files.
 
 ## Commands Reference
 
@@ -75,16 +85,16 @@ Default sort: `'done, -urgency, due_date, -priority, project.title, title'`
 
 ```bash
 vja ls --project=1                          # by project ID
-vja ls -o=projec                            # project name (regex)
+vja ls --project=projec                            # project name (regex)
 vja ls --base-project=myproject             # base project
-vja ls --label=@work                        # exact label
-vja ls -l=work                              # label (regex)
+vja ls --label="^@work$"                    # exact label title
+vja ls -l work                              # label (regex)
 vja ls --due-date="before today"            # overdue
-vja ls --due-date="ge in 0 days" --due-date="before 5 days"  # due within range
+vja ls --filter="due_date ge today" --filter="due_date before in 5 days"  # due within range
 vja ls --favorite=True                      # favorites only
 vja ls --priority="gt 3"                    # priority greater than 3
 vja ls --title=ask                          # title matches regex
-vja ls -u                                   # urgency >= 3
+vja ls -u                                   # urgency >= 4
 vja ls --urgency=8                          # urgency >= 8
 ```
 
@@ -136,6 +146,8 @@ vja check 1
 vja edit 1 5 8 --due="next monday 14:00"
 ```
 
+For "mark done" requests, use `--done=true`, which leaves an already completed task completed. `vja check` toggles a single task and can reopen it; use it only when toggling is requested.
+
 ### Deferring Tasks
 
 ```bash
@@ -147,7 +159,7 @@ vja defer 1 2w
 vja defer 1 2 3 1d
 ```
 
-Moves due_date and first reminder forward by the given timedelta.
+Moves a future due date forward by the given timedelta; for an overdue task, sets the due date to now plus that timedelta. Moves the first absolute reminder forward by the timedelta. Relative reminders stay relative to their configured date.
 
 ### Reminders
 
@@ -156,8 +168,8 @@ Moves due_date and first reminder forward by the given timedelta.
 vja edit 1 -r "next sunday at 11:00"
 
 # Relative to due date
-vja edit -r "1h before due_date"
-vja edit -r "10m before due"
+vja edit 1 -r "1h before due_date"
+vja edit 1 -r "10m before due"
 
 # Set reminder equal to due date
 vja edit 1 -r
@@ -229,23 +241,25 @@ vja logout
 ## Urgency
 
 Tasks have an urgency score (displayed in the last column) calculated from:
+
 - Due date proximity
 - Priority
 - Favorite status
 - Keyword matches in project title
 - Keyword matches in label titles
 
-Weights and keywords are configurable in `~/.vjacli/vja.rc` under `[urgency_coefficients]` and `[urgency_keywords]`.
+Weights and keywords are configurable in the active configuration file (normally `~/.config/vja/config.rc`) under `[urgency_coefficients]` and `[urgency_keywords]`.
 
 ## Priority Values
 
 | Value | Meaning |
 |-------|---------|
-| 1     | High    |
+| 0     | Unset   |
+| 1     | Low     |
 | 2     | Medium  |
-| 3     | Low     |
-| 4     | None    |
-| 5     | -1 (urgent) |
+| 3     | High    |
+| 4     | Urgent  |
+| 5     | Do now  |
 
 ## Common Workflows
 
@@ -262,8 +276,8 @@ vja ls --due-date="before tomorrow"
 
 ### Get things done
 ```bash
-vja check 1
-vja check 2 3
+vja edit 1 --done=true
+vja edit 2 3 --done=true
 ```
 
 ### Reschedule

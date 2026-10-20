@@ -3,6 +3,7 @@
 Manage Vikunja tasks from the command line using `vja`, the CLI client for [Vikunja](https://vikunja.io) (self-hosted task manager). Supports full task lifecycle: add, list, edit, delete, defer, and filter by project, label, priority, due date, or urgency.
 
 **Use when:**
+
 - "Add a task"
 - "List my tasks"
 - "Mark task 5 as done"
@@ -12,16 +13,24 @@ Manage Vikunja tasks from the command line using `vja`, the CLI client for [Viku
 - "Create a project"
 
 **Commands covered:**
+
 - Task management: add, list, edit, delete, check, clone, defer
 - Filtering: by project, label, priority, due date, urgency
 - Projects, labels, and kanban buckets
 - Opening tasks in the browser
 
+## Compatibility and configuration
+
+Examples were checked against `vja 6.0.3`, which requires Vikunja >= 2.5.0 and `/api/v2`. Check `vja --version` and command help for other versions. The normal configuration path is `~/.config/vja/config.rc`; `$VJA_CONFIGDIR` and `$XDG_CONFIG_HOME` can override it. `~/.vjacli/vja.rc` is a legacy fallback. See the [upstream project](https://github.com/cernst72/vja) for installation and version-specific guidance.
+
+Priorities run from 0 (unset) through 1 (low), 2 (medium), 3 (high), 4 (urgent), and 5 (do now). Completion requests use `--done=true`; `check` toggles one task and can reopen it.
+
 ## Usage
 
-The skill activates automatically when the agent detects a relevant task request.
+Invoke the skill by name, or let a supporting agent select it for a relevant request. Automatic activation depends on the host agent and its configuration.
 
 **Examples:**
+
 ```
 Add a task "Fix the login bug" with priority 3 due tomorrow
 ```

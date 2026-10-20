@@ -1,4 +1,8 @@
-# wiki-lint
+---
+title: 'Wiki Lint'
+description: 'Check a markdown wiki for contradictions, stale claims, broken links, index drift, orphan pages, and incomplete pages.'
+weight: 40
+---
 
 Check an existing Markdown knowledge wiki for contradictions, stale claims, broken links, index drift, orphan pages, and incomplete pages. The agent verifies candidates and proposes concrete fixes in a prioritized report. It also suggests useful questions and sources to investigate.
 

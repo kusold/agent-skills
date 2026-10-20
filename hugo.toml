@@ -1,0 +1,44 @@
+baseURL = 'https://kusold-agent-skills.pages.dev/'
+title = 'Agent Skills'
+theme = 'hugo-book'
+enableGitInfo = true
+disableKinds = ['taxonomy', 'term']
+
+# The site renders the repo as-is: docs/ and skills/ are mounted as content
+# instead of being copied or symlinked into a content/ directory.
+# NOTE: defining mounts discards Hugo's defaults, so 'content' must be
+# redeclared explicitly.
+[module]
+  [[module.mounts]]
+    source = 'content'
+    target = 'content'
+  [[module.mounts]]
+    source = 'docs'
+    target = 'content/docs'
+  [[module.mounts]]
+    source = 'skills'
+    target = 'content/skills'
+  # Publish the bundled wiki-lint scripts so docs can link to the raw files.
+  [[module.mounts]]
+    source = 'skills/wiki-lint/scripts'
+    target = 'static/skills/wiki-lint/scripts'
+
+[markup.goldmark.renderer]
+  # Needed by the theme's shortcodes (mermaid, katex, tabs).
+  unsafe = true
+
+[params]
+  # Sidebar is built from the /docs section.
+  BookSection = 'docs'
+  BookTheme = 'auto'
+  BookSearch = true
+  # Resolve editor-style relative links (e.g. ../../skills/x/SKILL.md)
+  # between pages and warn at build time when a target is missing.
+  BookPortableLinks = 'warning'
+  BookRepo = 'https://github.com/kusold/agent-skills'
+  BookLastChangeLink = '{{ .Site.Params.BookRepo }}/commit/{{ .GitInfo.Hash }}'
+
+[[menu.after]]
+  name = 'GitHub'
+  url = 'https://github.com/kusold/agent-skills'
+  weight = 10

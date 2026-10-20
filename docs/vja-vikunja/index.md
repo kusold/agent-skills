@@ -1,4 +1,8 @@
-# vja-vikunja
+---
+title: 'Vja — Vikunja CLI Task Manager'
+description: 'Manage Vikunja tasks from the command line using `vja`: add, list, edit, delete, defer, and filter tasks.'
+weight: 20
+---
 
 Manage Vikunja tasks from the command line using `vja`, the CLI client for [Vikunja](https://vikunja.io) (self-hosted task manager). Supports full task lifecycle: add, list, edit, delete, defer, and filter by project, label, priority, due date, or urgency.
 

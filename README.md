@@ -7,6 +7,7 @@ Skills follow the [Agent Skills](https://agentskills.io/) format.
 ## Available Skills
 
 - **[vja-vikunja](docs/vja-vikunja/)** — Manage Vikunja tasks from the command line using `vja`, the CLI client for the self-hosted task manager [Vikunja](https://vikunja.io).
+- **[simplified-technical](docs/simplified-technical/)** — Write or rewrite text in Simplified Technical English (ASD-STE100) at roughly 80% strictness: short sentences, simple tenses, active voice, no jargon.
 
 ## Installation
 

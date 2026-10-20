@@ -1,0 +1,14 @@
+{{- /* Upstream brand partial with the theme dropdown added to the right of
+       the title (see docs/theme-toggle.html). Re-sync from the theme on
+       submodule updates. */ -}}
+<div class="book-brand-row">
+  <h2 class="book-brand">
+    <a class="flex align-center" href="{{ partial "docs/links/home" . }}">
+      {{- with .Site.Params.BookLogo -}}
+      <img src="{{ . | relURL }}" alt="{{ partial "docs/text/i18n" "Logo" }}" />
+      {{- end -}}
+      <span>{{ .Site.Title }}</span>
+    </a>
+  </h2>
+  {{ partial "docs/theme-toggle" . }}
+</div>

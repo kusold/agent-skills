@@ -79,25 +79,106 @@
 }
 
 /*
-  Theme selector at the top of the sidebar menu
-  (site/layouts/_partials/docs/inject/menu-before.html). Mirrors the search
-  input styling from the theme's book.css; the variables above re-tint it
-  for whichever theme is active.
+  Theme dropdown to the right of the brand title
+  (site/layouts/_partials/docs/brand.html + docs/theme-toggle.html). No
+  display is set on the hidden-toggled elements so the theme's .hidden
+  rule (earlier in the concatenated bundle) keeps working.
 */
-.book-theme-select {
-  position: relative;
-  margin: var(--space-8) 0;
+.book-brand-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  margin-bottom: var(--space-16); /* takes over from .book-brand */
 }
 
-.book-theme-select select {
-  width: 100%;
-  padding: var(--space-8);
+.book-brand-row .book-brand {
+  margin-bottom: 0;
+}
+
+.book-theme-toggle {
+  position: relative;
+  margin-left: auto; /* pin the button to the right edge of the row */
+}
+
+.book-theme-button {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--space-4);
+
+  border: none;
+  border-radius: var(--border-radius);
+  background: none;
+
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  transition: opacity 0.1s ease-in-out; /* nav-link hover idiom (book.css) */
+}
+
+.book-theme-button:hover {
+  opacity: 0.5;
+}
+
+.book-theme-button .book-icon {
+  height: 1.25em;
+  width: 1.25em;
+}
+
+/* Roomier touch target on phones/tablets (iOS HIG suggests ~44px). */
+@media (pointer: coarse) {
+  .book-theme-button {
+    padding: var(--space-8);
+  }
+}
+
+.book-theme-menu {
+  position: absolute;
+  right: 0;
+  top: calc(100% + var(--space-8));
+  z-index: 1;
+
+  min-width: 9rem;
+  padding: var(--space-4);
 
   border: var(--space-1) solid var(--gray-200);
   border-radius: var(--border-radius);
+  background: var(--body-background);
+  box-shadow: 0 var(--space-4) var(--space-16) rgba(0, 0, 0, 0.15);
+}
 
+.book-theme-menu button {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  width: 100%;
+  padding: var(--space-8) var(--space-4);
+
+  border: none;
+  border-radius: var(--border-radius);
+  background: none;
+
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.book-theme-menu button:hover {
   background: var(--gray-100);
-  color: var(--body-font-color);
+}
+
+.book-theme-menu button[aria-checked="true"] {
+  color: var(--color-link);
+}
+
+.book-theme-menu button[aria-checked="true"]::after {
+  content: "✓";
+  margin-left: auto;
+}
+
+.book-theme-menu .book-icon {
+  height: 1em;
+  width: 1em;
 }
 
 /*

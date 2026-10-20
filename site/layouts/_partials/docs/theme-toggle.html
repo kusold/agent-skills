@@ -1,0 +1,71 @@
+{{- /* Theme dropdown: System (default) / Light / Dark. The choice is applied
+       before first paint and persisted by the inline script in
+       docs/html-head.html, which exposes it as window.bookTheme. Icons are
+       served from assets/icons/ and re-tinted by --icon-filter in dark
+       mode, like the theme's own icons. */ -}}
+<div class="book-theme-toggle hidden">
+  <button type="button" class="book-theme-button" aria-haspopup="menu"
+    aria-expanded="false" aria-controls="book-theme-menu" aria-label="Theme">
+    <img src="{{ partial "docs/icon" "contrast" }}" class="book-icon" alt="" />
+  </button>
+  <div id="book-theme-menu" class="book-theme-menu hidden" role="menu" aria-label="Theme">
+    <button type="button" role="menuitemradio" data-book-theme="auto">
+      <img src="{{ partial "docs/icon" "monitor" }}" class="book-icon" alt="" /><span>System</span>
+    </button>
+    <button type="button" role="menuitemradio" data-book-theme="light">
+      <img src="{{ partial "docs/icon" "sun" }}" class="book-icon" alt="" /><span>Light</span>
+    </button>
+    <button type="button" role="menuitemradio" data-book-theme="dark">
+      <img src="{{ partial "docs/icon" "moon" }}" class="book-icon" alt="" /><span>Dark</span>
+    </button>
+  </div>
+</div>
+<script>
+  (function () {
+    var toggle = document.querySelector(".book-theme-toggle");
+    var button = toggle.querySelector(".book-theme-button");
+    var menu = toggle.querySelector(".book-theme-menu");
+    var items = menu.querySelectorAll("[data-book-theme]");
+
+    function close() {
+      button.setAttribute("aria-expanded", "false");
+      menu.classList.add("hidden");
+    }
+
+    function sync() {
+      var current = window.bookTheme.value();
+      for (var i = 0; i < items.length; i++) {
+        items[i].setAttribute("aria-checked",
+          items[i].getAttribute("data-book-theme") === current ? "true" : "false");
+      }
+    }
+
+    button.addEventListener("click", function (event) {
+      event.stopPropagation();
+      var open = button.getAttribute("aria-expanded") === "true";
+      if (open) {
+        close();
+      } else {
+        button.setAttribute("aria-expanded", "true");
+        menu.classList.remove("hidden");
+      }
+    });
+
+    for (var i = 0; i < items.length; i++) {
+      items[i].addEventListener("click", function () {
+        window.bookTheme.set(this.getAttribute("data-book-theme"));
+        sync();
+        close();
+      });
+    }
+
+    document.addEventListener("click", close);
+    document.addEventListener("keydown", function (event) {
+      if (event.key === "Escape") close();
+    });
+
+    sync();
+    // Hidden until JS so no-script visitors don't see a dead control.
+    toggle.classList.remove("hidden");
+  })();
+</script>

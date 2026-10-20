@@ -21,6 +21,11 @@ disableKinds = ['taxonomy', 'term']
   [[module.mounts]]
     source = 'layouts'
     target = 'layouts'
+  # Needed for assets/styles/custom.css (the Rosé Pine palette) to shadow
+  # the theme's stub — mounts discard Hugo's 'assets' default too.
+  [[module.mounts]]
+    source = 'assets'
+    target = 'assets'
   [[module.mounts]]
     source = '../docs'
     target = 'content/docs'

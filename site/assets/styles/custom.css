@@ -1,0 +1,79 @@
+/*
+  Rosé Pine theme for hugo-book — https://rosepinetheme.com/palette/
+  Light: Rosé Pine Dawn · Dark: Rosé Pine (base)
+
+  Overrides the color variables declared in the theme's
+  assets/styles/themes.css. This file is concatenated last (see the
+  theme's assets/styles/index.yaml) and is unlayered, so it wins over
+  the theme's @layer theme blocks.
+
+  Role names in the comments refer to the official palette
+  (rose-pine/palette). To switch the dark variant to Rosé Pine Moon,
+  update the hexes in the two dark blocks below.
+*/
+
+/* Dawn — light, and the auto default */
+:root,
+:root[data-theme="light"],
+:root[data-theme="auto"] {
+  --body-background:    #faf4ed; /* base */
+  --body-font-color:    #575279; /* text */
+
+  --color-link:         #286983; /* pine */
+  --color-visited-link: #907aa9; /* iris */
+
+  --gray-100:           #f4ede8; /* highlight-low */
+  --gray-200:           #f2e9e1; /* overlay */
+  --gray-500:           #797593; /* subtle */
+
+  --color-accent-default:   #797593; /* subtle */
+  --color-accent-note:      #286983; /* pine */
+  --color-accent-tip:       #56949f; /* foam */
+  --color-accent-important: #907aa9; /* iris */
+  --color-accent-warning:   #ea9d34; /* gold */
+  --color-accent-caution:   #b4637a; /* love */
+}
+
+/* Rosé Pine — forced dark */
+:root[data-theme="dark"] {
+  --body-background:    #191724; /* base */
+  --body-font-color:    #e0def4; /* text */
+  --icon-filter: brightness(0) invert(1);
+
+  --color-link:         #9ccfd8; /* foam — pine is too dark on base */
+  --color-visited-link: #c4a7e7; /* iris */
+
+  --gray-100:           #1f1d2e; /* surface */
+  --gray-200:           #26233a; /* overlay */
+  --gray-500:           #908caa; /* subtle */
+
+  --color-accent-default:   #908caa; /* subtle */
+  --color-accent-note:      #9ccfd8; /* foam */
+  --color-accent-tip:       #ebbcba; /* rose — palette has no green */
+  --color-accent-important: #c4a7e7; /* iris */
+  --color-accent-warning:   #f6c177; /* gold */
+  --color-accent-caution:   #eb6f92; /* love */
+}
+
+/* Rosé Pine — auto dark */
+@media (prefers-color-scheme: dark) {
+  :root[data-theme="auto"] {
+    --body-background:    #191724; /* base */
+    --body-font-color:    #e0def4; /* text */
+    --icon-filter: brightness(0) invert(1);
+
+    --color-link:         #9ccfd8; /* foam — pine is too dark on base */
+    --color-visited-link: #c4a7e7; /* iris */
+
+    --gray-100:           #1f1d2e; /* surface */
+    --gray-200:           #26233a; /* overlay */
+    --gray-500:           #908caa; /* subtle */
+
+    --color-accent-default:   #908caa; /* subtle */
+    --color-accent-note:      #9ccfd8; /* foam */
+    --color-accent-tip:       #ebbcba; /* rose — palette has no green */
+    --color-accent-important: #c4a7e7; /* iris */
+    --color-accent-warning:   #f6c177; /* gold */
+    --color-accent-caution:   #eb6f92; /* love */
+  }
+}

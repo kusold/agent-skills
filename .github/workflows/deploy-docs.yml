@@ -13,12 +13,8 @@ on:
     paths:
       - 'docs/**'
       - 'skills/**'
-      - 'content/**'
-      - 'layouts/**'
-      - 'assets/**'
-      - 'hugo.toml'
+      - 'site/**'
       - '.gitmodules'
-      - 'themes/hugo-book'
       - '.github/workflows/deploy-docs.yml'
   workflow_dispatch:
 

@@ -77,3 +77,24 @@
     --color-accent-caution:   #eb6f92; /* love */
   }
 }
+
+/*
+  Source link at the top of docs/{skill}/ pages
+  (site/layouts/_partials/docs/inject/content-before.html).
+*/
+.book-skill-source {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-4);
+  margin-bottom: var(--space-16);
+  font-size: var(--font-size-smaller);
+  color: var(--gray-500);
+}
+
+.book-skill-source:hover {
+  color: var(--color-link);
+}
+
+.book-skill-source code {
+  font-size: inherit;
+}

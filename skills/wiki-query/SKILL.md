@@ -8,7 +8,7 @@ metadata:
 
 # Wiki Query
 
-Answer questions from the LLM Wiki — a persistent, interlinked knowledge base that the LLM builds and maintains from raw sources whose content is immutable (`tags` and `description` frontmatter fields may change; ingestion may also replace generic X post frontmatter titles when archiving and label unlabeled Mermaid fences) (Karpathy's "LLM Wiki" pattern). Start with the wiki rather than re-reading raw sources. Use its cross-references and summaries, but verify citations and surface gaps or contradictions you discover; maintenance may be incomplete. File valuable answers back into the wiki so explorations compound instead of disappearing into chat history.
+Answer questions from the LLM Wiki — a persistent, interlinked knowledge base that the LLM builds and maintains from raw sources whose content is immutable (`tags` and `description` frontmatter fields and supported handle-only authors may change; ingestion may also replace generic X post frontmatter titles when archiving and label unlabeled Mermaid fences) (Karpathy's "LLM Wiki" pattern). Start with the wiki rather than re-reading raw sources. Use its cross-references and summaries, but verify citations and surface gaps or contradictions you discover; maintenance may be incomplete. File valuable answers back into the wiki so explorations compound instead of disappearing into chat history.
 
 ## Default wiki layout
 

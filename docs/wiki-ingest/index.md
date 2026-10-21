@@ -86,7 +86,7 @@ The global `wiki/index.md` catalogs every page, including project indexes and su
 
 If ingestion fails after a move, the agent reports the archived path and unfinished work so it can resume from `raw/`.
 
-The source file’s `tags` and `description` YAML frontmatter fields may be added or updated. During ingestion, the agent may also label a clearly recognizable Mermaid diagram in an unlabeled fenced code block by adding `mermaid` to its opening fence (for example, a block beginning with `flowchart LR`). Diagram contents, closing fences, surrounding text, other original fields, and provenance stay unchanged. Blocks that are ambiguous or already have a language identifier are left as they are.
+The source file’s `tags` and `description` YAML frontmatter fields may be added or updated. When moving an X (Twitter) post from `_inbox/` into `raw/`, a generic frontmatter `title` such as `Post by @karpathy on X` may also be replaced with a concise title grounded in the post’s content. Meaningful existing titles are preserved, along with the post text, headings, author/handle, URL, dates, and other provenance. During ingestion, the agent may also label a clearly recognizable Mermaid diagram in an unlabeled fenced code block by adding `mermaid` to its opening fence (for example, a block beginning with `flowchart LR`). Apart from these permitted frontmatter edits, diagram contents, closing fences, surrounding text, other original fields, and provenance stay unchanged. Blocks that are ambiguous or already have a language identifier are left as they are.
 
 For example, an unlabeled block containing `flowchart LR` can become:
 

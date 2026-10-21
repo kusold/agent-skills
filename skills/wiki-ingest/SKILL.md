@@ -56,6 +56,8 @@ Default layout (wiki root = current project directory unless the user points els
 
 Start with the user's explicit path and available project instructions. Read existing `CLAUDE.md`/`AGENTS.md` conventions before looking for the default `wiki/index.md`; a schema may specify a different wiki directory or catalog name. Project indexes under `wiki/projects/` belong to the same wiki; they are not separate wiki roots. If multiple candidate wikis remain, ask which one to use.
 
+Before changing files, check whether the wiki root is inside a Git working tree (`git -C <wiki-root> rev-parse --is-inside-work-tree`). If it is, record the initial working-tree and staged changes so the ingest commit in step 10 can exclude unrelated work. This also handles Git worktrees and wikis nested in a larger repository.
+
 For a new wiki, create the top-level files and category directories above. The named domain and project pages illustrate the layout; create them only when relevant content exists, rather than generating empty placeholder pages. For an existing or partial wiki, create only missing directories and files, following its schema. A missing default index does not authorize replacing existing pages, logs, or instruction files. If no schema file exists, create a `CLAUDE.md` skeleton describing the layout, page types, and log format. If an instruction file already exists, preserve it; add wiki conventions only when requested. Tell the user where the conventions live and that they can evolve them.
 
 ### 1. Locate and archive the source
@@ -194,10 +196,19 @@ Append-only, newest last:
 
 The `## [YYYY-MM-DD] ingest | <Title>` prefix keeps the log parseable: `grep "^## \[" wiki/log.md | tail -5`.
 
+### 10. Commit the completed ingest when using Git
+
+After each source is successfully ingested, including its page updates, index updates, and log entry, commit the changes made by that ingest if the wiki is inside a Git working tree. In batch mode, make one commit per completed source before starting the next. Include the archived source and assets, any tracked inbox-file removal, generated or updated wiki pages, and bootstrap files created for that ingest.
+
+- Review the diff against the initial state and commit only this ingest’s changes. Preserve unrelated working-tree edits and pre-existing staged changes, including unrelated hunks in shared files. Use explicit paths and selective staging or an isolated Git index as needed; do not use blanket `git add .` or `git commit -a`. If changes cannot be separated reliably, leave them intact and report the commit as blocked rather than include unrelated work.
+- Use a descriptive message such as `wiki: ingest Attention Is All You Need`. Verify that the commit succeeded and report its short hash with the ingest result.
+- If the ingest produced no changes, skip an empty commit. If ingestion is incomplete, do not create a success commit; report the archived path and remaining work. If committing fails (for example, identity configuration or a hook failure), preserve the files, report that ingestion completed but the commit failed, and explain the error without changing Git configuration or bypassing hooks.
+- Outside a Git working tree, finish ingestion without creating a repository. This step authorizes a local commit, not a push to a remote.
+
 ## Edge cases
 
 - **Schema overrides defaults**: if CLAUDE.md/AGENTS.md at the wiki root (or the existing index.md/log.md structure) defines different conventions, page types, or formats, follow those instead of this skill's defaults.
 - **Duplicate or updated edition**: check the index and log before writing. If the new file is a new edition of an already-ingested work, update the existing source page (bump `updated`, note the edition, refresh claims) instead of creating a near-duplicate. Create a separate page only for a genuinely distinct document, and cross-link the two.
 - **Low-quality or wiki-contradicting sources**: do not reject them — record reliability notes on the source page, flag contradictions on the affected pages, and let the user weigh the evidence.
 - **Non-text sources** (images, data files): reference them from the source page and related pages; view images for context when useful; describe data files from inspection.
-- **The wiki is just a git repo of markdown** — don't overengineer. Version history is free.
+- **Keep the wiki simple** — Markdown files and local Git history when available are enough; no additional infrastructure is required.

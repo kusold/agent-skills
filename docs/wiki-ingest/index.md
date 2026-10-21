@@ -26,6 +26,7 @@ Ingest sources into a persistent, LLM-maintained wiki following the [LLM Wiki](h
 - Updates affected entity/concept pages, creating new pages for significant topics and flagging contradictions without silently overwriting claims
 - Maintains broad domain syntheses in `wiki/domains/` and project indexes, architecture, workflow, and decision notes in `wiki/projects/<project>/`
 - Keeps `wiki/index.md` (one line per page) and `wiki/log.md` current on every ingest
+- Commits each completed source ingest locally when the wiki is in a Git working tree, including during batch ingestion; leaves unrelated edits and staged changes out of the commit
 
 ## Usage
 
@@ -78,11 +79,14 @@ The global `wiki/index.md` catalogs every page, including project indexes and su
 
 ## How it works
 
-1. Locates the wiki using your path and schema before default-path discovery. With no explicit source, looks in `_inbox/`, including subdirectories. An empty inbox is reported rather than triggering automatic re-ingestion of `raw/`
+1. Locates the wiki using your path and schema before default-path discovery, and records any existing Git changes before editing. With no explicit source, looks in `_inbox/`, including subdirectories. An empty inbox is reported rather than triggering automatic re-ingestion of `raw/`
 2. Moves selected inbox files into `raw/` unchanged, choosing a distinct destination on collisions. Files already in `raw/` stay in place; other explicit paths or attachments are copied unless you request a move. URL sources become new snapshots in `raw/` with the URL and retrieval date recorded. Citations use the archived path; existing raw files are never overwritten
 3. Reads it fully, viewing referenced images separately when they matter; may update `tags` and `description` frontmatter and label clearly recognizable, unlabeled Mermaid fences as described below
 4. Discusses key takeaways and planned page updates with you before writing
 5. Writes the source summary page, updates affected entity/concept, domain, and project pages and, when the big picture changes, `wiki/overview.md`, refreshes `wiki/index.md`, and appends a `## [YYYY-MM-DD] ingest | <Title>` entry to `wiki/log.md`
+6. If the wiki is in a Git working tree (including a worktree or a wiki nested in a larger repo), commits only that completed source’s ingest changes with a message such as `wiki: ingest Attention Is All You Need`, then reports the commit hash. This includes archived sources/assets, tracked inbox removals, wiki updates, and any bootstrap files. Batch ingestion creates one commit per completed source.
+
+Unrelated working-tree edits and pre-existing staged changes are preserved and excluded from the ingest commit, including unrelated edits in the same file. If the changes cannot be separated, the agent reports the blocked commit. No empty commit is created when nothing changed. A commit failure leaves the files intact and is reported separately from successful ingestion; Git configuration and hooks are preserved. Outside Git, ingestion finishes without initializing a repository. Ingest commits stay local unless you separately request a push.
 
 If ingestion fails after a move, the agent reports the archived path and unfinished work so it can resume from `raw/`.
 

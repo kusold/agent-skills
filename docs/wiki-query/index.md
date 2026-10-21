@@ -35,10 +35,12 @@ Summarize what I know about sleep and exercise
 ## How it works
 
 1. Reads your explicit path and existing schema before default-path discovery, then uses the configured catalog to select pages. If pages exist without a catalog, it searches them and reports the gap. If no wiki exists, it suggests **wiki-ingest** rather than bootstrapping one.
-2. Reads the pages, following wikilinks for multi-hop questions. If the index is stale, it falls back to searching the wiki directory and suggests **wiki-lint** to fix the drift.
+2. Reads the pages, starting with domain syntheses for broad questions or project indexes and architecture/workflow/decision notes for project questions, then follows wikilinks to evidence. Uses qualified project links to distinguish repeated filenames and distinguishes proposed from adopted decisions. If the index is stale, it falls back to searching the wiki directory and suggests **wiki-lint** to fix the drift.
 3. Synthesizes an answer with citations, clearly separating sourced claims, inferences it is constructing, and coverage gaps ("the wiki doesn't cover X yet — want to ingest a source on it?"). Conflicts between pages are surfaced, not averaged away.
 4. Matches the output form to the ask: plain markdown (default), comparison table, Marp slide deck, or matplotlib chart.
-5. For durable syntheses, offers to file the answer as `wiki/analyses/<slug>.md`, update `wiki/index.md`, and append a `query` entry to `wiki/log.md`. Casual Q&A stays in chat — the log stays signal-rich.
+5. For durable syntheses, offers to file the answer as `wiki/analyses/<slug>.md`, update `wiki/index.md`, and append a `query` entry to `wiki/log.md`. Relevant domain pages and project indexes link to saved analyses when useful. Casual Q&A stays in chat — the log stays signal-rich.
+
+The shared [wiki layout](../wiki-ingest/) includes `domains/` and nested `projects/` alongside sources, entities, concepts, and analyses. The global index catalogs every page; project indexes provide additional local navigation.
 
 ## Full Workflow Reference
 

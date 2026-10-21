@@ -8,39 +8,54 @@ metadata:
 
 # Wiki Query
 
-Answer questions from the LLM Wiki — a persistent, interlinked knowledge base that the LLM builds and maintains from immutable raw sources (Karpathy's "LLM Wiki" pattern). Start with the wiki rather than re-reading raw sources. Use its cross-references and summaries, but verify citations and surface gaps or contradictions you discover; maintenance may be incomplete. File valuable answers back into the wiki so explorations compound instead of disappearing into chat history.
+Answer questions from the LLM Wiki — a persistent, interlinked knowledge base that the LLM builds and maintains from raw sources whose content is immutable (`tags` and `description` frontmatter fields may change; ingestion may also label unlabeled Mermaid fences) (Karpathy's "LLM Wiki" pattern). Start with the wiki rather than re-reading raw sources. Use its cross-references and summaries, but verify citations and surface gaps or contradictions you discover; maintenance may be incomplete. File valuable answers back into the wiki so explorations compound instead of disappearing into chat history.
 
 ## Default wiki layout
 
 ```
 <wiki-root>/
   CLAUDE.md                  # or AGENTS.md — the schema: conventions for THIS wiki
-  raw/                       # immutable sources (articles, papers, notes, assets)
+  _inbox/                    # incoming sources; wiki-ingest moves them to raw/
+  raw/                       # immutable source content; editable tags and description frontmatter
   wiki/
     index.md                 # catalog of all pages, by category
-    log.md                   # append-only chronological record
     overview.md              # evolving top-level synthesis
-    sources/                 # one summary page per ingested raw source
-    entities/                # people, orgs, products, places, projects...
-    concepts/                # topics, themes, methods...
-    analyses/                # query results filed back into the wiki
+    log.md                   # append-only chronological record
+    sources/                 # one summary per archived source
+    entities/                # people, orgs, products, places...
+    concepts/                # reusable topics, themes, methods...
+    analyses/                # durable answers and comparisons
+    domains/                 # broad areas of knowledge
+      ai.md
+      software-engineering.md
+      self-hosting.md
+      finances.md
+    projects/                # project-specific context and decisions
+      home-lab/
+        index.md
+        architecture.md
+        decisions.md
+      llm-wiki/
+        index.md
+        workflow.md
+        decisions.md
 ```
 
 **The wiki's schema overrides these defaults.** If a CLAUDE.md/AGENTS.md schema exists at the wiki root (or index.md/log.md already follow a different structure), use the wiki's own conventions — categories, page formats, citation style — over everything below.
 
-Start with the user's explicit path and available project instructions. Read existing `CLAUDE.md`/`AGENTS.md` conventions before looking for `wiki/index.md`; the schema may specify a different wiki directory or catalog name. If multiple candidate wikis remain, ask which one to use. Paths below describe the default layout; substitute the schema's configured paths.
+Start with the user's explicit path and available project instructions. Read existing `CLAUDE.md`/`AGENTS.md` conventions before looking for `wiki/index.md`; the schema may specify a different wiki directory or catalog name. Project indexes under `wiki/projects/` belong to the same wiki; they are not separate wiki roots. If multiple candidate wikis remain, ask which one to use. Paths below describe the default layout; substitute the schema's configured paths.
 
 ## Workflow
 
 ### 1. Read `wiki/index.md` first
 
-The index is the catalog: every page with a wikilink and one-line summary, organized by category. Select relevant pages from it.
+The index is the catalog: every page with a wikilink and one-line summary, organized by category. Select relevant pages from it, including domain syntheses and project indexes. The global catalog includes project supporting pages as well as their indexes.
 
 If no wiki exists after checking the user's path and schema, suggest **wiki-ingest** to bootstrap it. Do not create a wiki or index as part of answering a query. If wiki pages exist but their configured catalog is missing, search the pages directly and report the missing catalog; do not treat the wiki as nonexistent. Saving an analysis in an existing wiki is handled in step 5.
 
 ### 2. Read the relevant pages
 
-Open the selected pages and follow `[[wikilinks]]` (page name = filename) as needed — entity → concept → source chains are normal for multi-hop questions.
+Open the selected pages and follow `[[wikilinks]]` (page name = filename) as needed — domain → concept → source and project index → architecture/workflow/decisions → source chains are normal for multi-hop questions. For project questions, read its index and relevant supporting pages; for broad topic questions, consult the domain page and verify its supporting evidence. Distinguish proposed and adopted project decisions. Use qualified links such as `[[projects/home-lab/decisions]]` and `[[projects/llm-wiki/index]]` to avoid ambiguous shared filenames.
 
 If the index looks stale or incomplete, fall back to searching the wiki directly:
 
@@ -95,6 +110,9 @@ When the answer is a durable artifact — a comparison, analysis, timeline, disc
 
 2. Update `wiki/index.md`: add a line under the Analyses category:
    `- [[analyses/postgres-vs-sqlite-for-edge-deployments]] — one-line summary`
+
+   Link the analysis from relevant domain pages and project indexes when it adds useful context. Update project supporting pages only when the requested save includes those changes; do not turn an analysis into an adopted project decision.
+
 3. Append to `wiki/log.md` (ISO date from the actual current date):
 
    ```

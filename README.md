@@ -8,6 +8,7 @@ Browse the full documentation at **[skills.mikekusold.com](https://skills.mikeku
 
 ## Available Skills
 
+- **[skill-building](docs/skill-building/index.md)** — Create and improve Agent Skills with focused workflows, portable resources, and structural and behavioral validation.
 - **[skill-writing](docs/skill-writing/index.md)** — Create, review, and improve agent skills with focused instructions and observable checks.
 - **[vja-vikunja](docs/vja-vikunja/index.md)** — Manage Vikunja tasks from the command line using `vja`, the CLI client for the self-hosted task manager [Vikunja](https://vikunja.io).
 - **[simplified-technical](docs/simplified-technical/index.md)** — Write or rewrite text in Simplified Technical English (ASD-STE100) at roughly 80% strictness: short sentences, clear verbs, active voice, and precise terminology.

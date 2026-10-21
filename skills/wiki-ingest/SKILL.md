@@ -13,7 +13,7 @@ Build a persistent knowledge wiki that sits between the user and raw sources wit
 ## Layers and default layout
 
 - `_inbox/` — incoming sources; the default place to look when no source is specified.
-- `raw/` — archived sources moved from `_inbox/` or saved from URLs. Preserve source content except for the permitted Mermaid fence labeling below; `tags` and `description` frontmatter fields may be updated, with the narrow X post title exception below.
+- `raw/` — archived sources moved from `_inbox/` or saved from URLs. Preserve source content except for the permitted Mermaid fence labeling below; `tags` and `description` frontmatter fields may be updated, with the title and author normalization exceptions below.
 - `wiki/` — your pages. You create and maintain all of it.
 - `<wiki-root>/CLAUDE.md` (or `AGENTS.md`) — the schema: conventions for this wiki, co-evolved by user and LLM.
 
@@ -56,6 +56,8 @@ Default layout (wiki root = current project directory unless the user points els
 
 Start with the user's explicit path and available project instructions. Read existing `CLAUDE.md`/`AGENTS.md` conventions before looking for the default `wiki/index.md`; a schema may specify a different wiki directory or catalog name. Project indexes under `wiki/projects/` belong to the same wiki; they are not separate wiki roots. If multiple candidate wikis remain, ask which one to use.
 
+Check for schema conflicts before changing files. A blanket rule such as “raw: read, never modify” conflicts with this skill’s frontmatter and Mermaid exceptions. Follow any explicit user authorization resolving the conflict; otherwise identify the exact conflicting instruction and explain which normalization it prevents instead of silently skipping it or claiming full completion. Update an existing wiki schema only when the user has authorized that change. A new schema skeleton must document the allowed frontmatter, filename, and Mermaid edits below, rather than declaring all raw bytes immutable.
+
 Before changing files, check whether the wiki root is inside a Git working tree (`git -C <wiki-root> rev-parse --is-inside-work-tree`). If it is, record the initial working-tree and staged changes so the ingest commit in step 10 can exclude unrelated work. This also handles Git worktrees and wikis nested in a larger repository.
 
 For a new wiki, create the top-level files and category directories above. The named domain and project pages illustrate the layout; create them only when relevant content exists, rather than generating empty placeholder pages. For an existing or partial wiki, create only missing directories and files, following its schema. A missing default index does not authorize replacing existing pages, logs, or instruction files. If no schema file exists, create a `CLAUDE.md` skeleton describing the layout, page types, and log format. If an instruction file already exists, preserve it; add wiki conventions only when requested. Tell the user where the conventions live and that they can evolve them.
@@ -64,20 +66,25 @@ For a new wiki, create the top-level files and category directories above. The n
 
 Honor explicit source paths, selections, and URLs first. Otherwise, look for source files in `<wiki-root>/_inbox/` (including subdirectories), following any schema-defined inbox path. Process discovered sources one at a time by default; discovery of multiple files does not imply batch mode. If the inbox is empty, report that and ask for a source instead of re-ingesting `raw/` automatically.
 
-- **Inbox files:** move each selected source from `_inbox/` into `raw/` before reading it for ingestion. Move, do not copy: after a successful move, the file must no longer be in `_inbox/`. Preserve the source content and format during the move; do not rewrite or normalize it. Afterward, the `tags` and `description` fields in the source file’s YAML frontmatter may be added or updated; the Mermaid fence labeling in step 2 is the only permitted source-body edit. When moving an X post, the generic frontmatter title may also be updated as described below. Keep these metadata edits separate from the source body and preserve all other original fields and provenance. Preserve relative paths for accompanying assets so links continue to resolve. If a destination exists, choose a distinct filename or containing directory; never overwrite an archived file, even for a duplicate. Verify the move succeeded before continuing, and use the final `raw/` path in all citations.
-- **Already in `raw/`:** ingest in place; `tags` and `description` frontmatter fields may be updated, and the Mermaid fence labeling in step 2 is permitted; otherwise never change its source content, replace it with another source, move it, or delete it.
+- **Inbox files:** move each selected source from `_inbox/` into `raw/` before reading it for ingestion. Move, do not copy: after a successful move, the file must no longer be in `_inbox/`. Preserve the source content and format during the move; do not rewrite or normalize it. Afterward, the `tags` and `description` fields in the source file’s YAML frontmatter may be added or updated; the Mermaid fence labeling in step 2 is the only permitted source-body edit. After reading the archived source, apply the title and author normalization rules in step 2 before writing wiki pages. Keep these metadata edits separate from the source body and preserve all other original fields and provenance. Preserve relative paths for accompanying assets so links continue to resolve. If a destination exists, choose a distinct filename or containing directory; never overwrite an archived file, even for a duplicate. Verify the move succeeded before continuing, and use the final `raw/` path in all citations.
+- **Already in `raw/`:** ingest in place; `tags` and `description` frontmatter fields and supported handle-only authors may be updated, and the Mermaid fence labeling in step 2 is permitted; the generic X title/filename rules also apply when resuming an unfinished inbox ingest. Otherwise never change its source content, replace it with another source, move it, or delete it.
 - **Other explicit paths or attachments:** archive a new copy in `raw/`, preserving the original outside the inbox unless the user requests a move. Apply the same collision and content-preservation rules.
 - **URLs:** fetch and save a new snapshot into `raw/` first (e.g. `raw/<slug>.md`), recording the URL and retrieval date, then ingest the saved file. Reuse an existing snapshot only when it is the intended identical source; otherwise choose a distinct filename, such as a dated snapshot with a unique suffix.
 
 **GitHub repository roots:** when archiving a source whose original URL identifies the root of a GitHub repository (`https://github.com/<owner>/<repo>`, with an optional trailing slash), name the Markdown file `<owner> - <repo>.md`. For example, `https://github.com/tobi/qmd` becomes `raw/tobi - qmd.md`. Use the owner and repository names from the source URL, including for existing inbox exports whose URL is recorded in frontmatter; a repository link mentioned inside an unrelated source does not qualify. This rule applies when moving an inbox file or saving a new URL snapshot, not to issues, pull requests, file/blob pages, or other repository subpages. Preserve the source title, body, and provenance under the other rules above. On a filename collision, retain the `<owner> - <repo>` base and add a date or unique suffix; never overwrite an archived source. Preserve accompanying asset links and cite the final archived filename.
-
-**Generic X post titles:** when moving an X (Twitter) post from `_inbox/` to `raw/`, you may replace a generic YAML frontmatter `title` such as `Post by @karpathy on X` with a concise, descriptive title grounded in the post's actual content. When replacing the title, name the archived file from that title using a kebab-case slug and preserve its extension, so the title and filename closely match. Preserve meaningful existing titles. This exception changes only the frontmatter `title` and destination filename, not the post text, headings, author/handle, original URL, dates, or other provenance. For example, a post about maintaining an LLM wiki could use `Karpathy on maintaining an LLM wiki` with `raw/karpathy-on-maintaining-an-llm-wiki.md` instead of the generic export title and filename. If that path exists, add a date or unique suffix while keeping the title-derived slug recognizable; never overwrite an archived source. Preserve accompanying asset links and use the final filename in all citations.
 
 Archiving is not completion: if reading or wiki updates fail, report the archived path and unfinished work. Resume from that file rather than treating an empty inbox as proof of successful ingestion.
 
 ### 2. Read it fully
 
 Read the entire source — papers, articles, chapters — not excerpts. You cannot read markdown with inline images in one pass: read the text first, then view the referenced images separately if they matter. Note publication date, authorship, and quality signals as you go.
+
+**Normalize after reading, before writing wiki pages.** Retain the original archived text or an equivalent diff baseline before editing so the completion check can distinguish permitted edits from accidental changes.
+
+- **Generic X post titles:** for an X (Twitter) post moved from `_inbox/` to `raw/`, replace a generic frontmatter `title` such as `Post by @karpathy on X` with a concise title grounded in the post’s content. Rename the archived file to a closely matching kebab-case slug, preserving its extension. For example, a post about LLM wiki maintenance could become `Karpathy on maintaining an LLM wiki` and `raw/karpathy-on-maintaining-an-llm-wiki.md`. Preserve meaningful existing titles. On collisions, retain the title-derived slug and add a date or unique suffix; never overwrite another source. Preserve asset links and cite the final path. These rules also apply when resuming an unfinished inbox ingest already moved to `raw/`.
+- **Handle-only authors:** expand a handle to the author’s full name when the source, established wiki context, or user confirmation supports the identity. Preserve the original handle in the author field (for example, `Andrej Karpathy (@karpathy)`) or an existing provenance field; keep the original URL and dates unchanged. Preserve other authors and meaningful existing names. If identity is ambiguous or unsupported, keep the handle and report that the full name could not be established; do not guess. This exception permits updating the YAML frontmatter `author` field, not rewriting attribution in the source body.
+
+Only the applicable frontmatter fields (`tags`, `description`, the generic X `title`, and a supported handle-only `author`) and archive filename may change under these rules. Other metadata, provenance, headings, and source text remain unchanged except for Mermaid fence labeling below.
 
 **Unlabeled Mermaid diagrams:** during ingestion, you may add the `mermaid` language identifier to an unlabeled fenced code block when its contents clearly form a Mermaid diagram (for example, one beginning with `flowchart LR`). Change only the opening fence’s language identifier; preserve every line inside the block, its closing fence, and surrounding text. Leave ambiguous blocks and blocks with an existing language identifier unchanged. This narrow formatting exception applies to the archived Markdown source as well as generated wiki pages; it does not permit rewriting diagram content or other source text.
 
@@ -196,7 +203,16 @@ Append-only, newest last:
 
 The `## [YYYY-MM-DD] ingest | <Title>` prefix keeps the log parseable: `grep "^## \[" wiki/log.md | tail -5`.
 
-### 10. Commit the completed ingest when using Git
+### 10. Verify completion and commit when using Git
+
+Before committing or reporting completion, verify against the original source and final files:
+
+- Applicable title, filename, and author rules were satisfied, or an unresolved identity/schema restriction is explicitly reported.
+- Only permitted frontmatter fields and Mermaid opening-fence identifiers changed; source body, diagram contents, unrelated metadata, and provenance are preserved.
+- The archived file exists, the moved inbox file is absent, source/asset links resolve, and wiki references use the final archived path.
+- Source summary, affected pages, indexes, and the log entry are present and consistent.
+
+Correct failed checks before making a success commit. If a required normalization is blocked by schema instructions, report the unfinished requirement rather than claiming full completion. An unsupported author identity can remain a handle when explicitly reported.
 
 After each source is successfully ingested, including its page updates, index updates, and log entry, commit the changes made by that ingest if the wiki is inside a Git working tree. In batch mode, make one commit per completed source before starting the next. Include the archived source and assets, any tracked inbox-file removal, generated or updated wiki pages, and bootstrap files created for that ingest.
 
@@ -204,6 +220,8 @@ After each source is successfully ingested, including its page updates, index up
 - Use a descriptive message such as `wiki: ingest Attention Is All You Need`. Verify that the commit succeeded and report its short hash with the ingest result.
 - If the ingest produced no changes, skip an empty commit. If ingestion is incomplete, do not create a success commit; report the archived path and remaining work. If committing fails (for example, identity configuration or a hook failure), preserve the files, report that ingestion completed but the commit failed, and explain the error without changing Git configuration or bypassing hooks.
 - Outside a Git working tree, finish ingestion without creating a repository. This step authorizes a local commit, not a push to a remote.
+
+Finish with links to both the archived raw file and its source summary, plus the commit hash when applicable. Mention unresolved identity, schema, or commit issues.
 
 ## Edge cases
 

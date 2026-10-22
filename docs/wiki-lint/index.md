@@ -36,7 +36,7 @@ The shared [wiki layout](../wiki-ingest/) includes domain syntheses and project 
 
 ## Checks and limitations
 
-The bundled Python 3.10+ checker is read-only and uses only the standard library. It checks wikilink destinations and ambiguity, raw references, index coverage, orphan pages, and short-page candidates. It preserves directory-qualified link targets, so `entities/acme.md` and `sources/acme.md` remain distinct. Raw Markdown links resolve relative to the page and support spaces, Unicode, and URL encoding.
+The bundled Python 3.10+ checker is read-only and uses only the standard library. It checks wikilink destinations and ambiguity, raw references, index coverage, orphan pages, and short-page candidates. It preserves directory-qualified link targets, so `entities/acme.md` and `sources/acme.md` remain distinct. Raw Markdown links resolve relative to the page and support spaces, Unicode, and URL encoding. Link labels, titles, and remote destinations do not count as local raw references: `[paper](https://example.org/raw/paper.pdf)` does not reference a local `raw/paper.pdf`.
 
 From a repository checkout, run:
 

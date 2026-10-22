@@ -101,7 +101,9 @@ def check(root, wiki_dir="wiki", raw_dir="raw", index="wiki/index.md", hubs=()):
             report("stub", page, 1, "Fewer than 10 lines; verify whether the page is complete")
         for number, line in enumerate(visible.splitlines(), 1):
             # Inline code is not a wikilink. Raw paths in inline code are still checked.
-            link_line = re.sub(r"(`+).*?\1", "", line)
+            # Keep offsets stable so Markdown spans can also mask the original
+            # line without discarding inline-code raw references.
+            link_line = re.sub(r"(`+).*?\1", lambda m: " " * len(m[0]), line)
             for match in WIKILINK.finditer(link_line):
                 targets = resolve_link(match[1], page)
                 if not targets:
@@ -119,6 +121,8 @@ def check(root, wiki_dir="wiki", raw_dir="raw", index="wiki/index.md", hubs=()):
             # Markdown paths resolve relative to the page, not the project root.
             spans = []
             for match in MARKDOWN_LINK.finditer(link_line):
+                # Link labels, titles, and remote URLs are not bare raw paths.
+                spans.append(match.span())
                 destination = (match[1] or match[2]).strip()
                 if match[1] is None:
                     destination = re.sub(r"\s+[\"'].*[\"']$", "", destination)
@@ -128,14 +132,13 @@ def check(root, wiki_dir="wiki", raw_dir="raw", index="wiki/index.md", hubs=()):
                 path = (page.parent / unquote(parsed.path)).resolve()
                 if path.is_relative_to(raw):
                     raw_reference(page, number, path)
-                spans.append(match.span())
             # Remove link syntax before scanning bare root-relative raw paths.
-            remainder = link_line
+            remainder = line
             for start, end in reversed(spans):
                 remainder = remainder[:start] + " " * (end - start) + remainder[end:]
             # Preserve inline-code raw references, including filenames with spaces.
             quoted = re.compile(r"`([^`]+)`|\"([^\"]+)\"|'([^']+)'")
-            for match in quoted.finditer(line):
+            for match in quoted.finditer(remainder):
                 value = next(part for part in match.groups() if part is not None)
                 if value.startswith(raw_prefix + "/"):
                     raw_reference(page, number, (root / unquote(value)).resolve())

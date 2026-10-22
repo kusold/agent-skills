@@ -74,6 +74,30 @@ class WikiChecks(unittest.TestCase):
         self.assertEqual(self.findings("broken-raw-reference"), [])
         self.assertEqual(self.findings("unreferenced-raw"), [])
 
+    def test_remote_markdown_links_do_not_reference_local_raw_files(self):
+        self.write("raw/paper.pdf", "paper")
+        self.write("wiki/sources/a.md", '\n'.join([
+            '[remote](https://example.org/raw/paper.pdf)',
+            '[remote](https://example.org/raw/missing.pdf "raw/title.pdf")',
+            '[remote](//example.org/raw/other.pdf)',
+        ]))
+        self.assertEqual(self.findings("broken-raw-reference"), [])
+        self.assertEqual([f["file"] for f in self.findings("unreferenced-raw")],
+                         ["raw/paper.pdf"])
+
+    def test_link_masking_preserves_inline_raw_references_and_line_numbers(self):
+        self.write("raw/My Paper.pdf", "paper")
+        self.write("wiki/sources/a.md", '\n'.join([
+            '`raw/My Paper.pdf` [remote](https://example.org/raw/missing.pdf)',
+            '[paper](../../raw/My%20Paper.pdf "raw/title.pdf")',
+            '[missing](../../raw/absent.pdf)',
+        ]))
+        broken = self.findings("broken-raw-reference")
+        self.assertEqual(len(broken), 1)
+        self.assertEqual(broken[0]["line"], 3)
+        self.assertIn("absent.pdf", broken[0]["message"])
+        self.assertEqual(self.findings("unreferenced-raw"), [])
+
     def test_alias_anchor_extension_and_relative_wikilinks(self):
         self.write("wiki/entities/acme.md", "# Acme\n[[../sources/acme.md#Section|source]]\n")
         self.write("wiki/sources/acme.md", "# Acme source\n[[#Heading]]\n")

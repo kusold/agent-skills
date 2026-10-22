@@ -8,7 +8,7 @@ metadata:
 
 # Wiki Query
 
-Answer questions from the LLM Wiki — a persistent, interlinked knowledge base that the LLM builds and maintains from raw sources whose content is immutable (`tags` and `description` frontmatter fields and supported handle-only authors may change; ingestion may also replace generic X post frontmatter titles when archiving and label unlabeled Mermaid fences) (Karpathy's "LLM Wiki" pattern). Start with the wiki rather than re-reading raw sources. Use its cross-references and summaries, but verify citations and surface gaps or contradictions you discover; maintenance may be incomplete. File valuable answers back into the wiki so explorations compound instead of disappearing into chat history.
+Answer questions from the LLM Wiki — a persistent, interlinked knowledge base that the LLM builds and maintains from raw sources whose content is immutable (`tags` and `description` frontmatter fields and supported handle-only authors may change; ingestion may also replace generic X post frontmatter titles when archiving and label unlabeled Mermaid fences) (Karpathy's "LLM Wiki" pattern). Start with the wiki rather than re-reading raw sources. Use its cross-references and summaries, but verify citations and surface gaps or contradictions you discover; maintenance may be incomplete. Queries are read-only by default. Save valuable answers when the user requests it or an established workflow authorizes it; otherwise offer to save them.
 
 ## Default wiki layout
 
@@ -55,7 +55,9 @@ If no wiki exists after checking the user's path and schema, suggest **wiki-inge
 
 ### 2. Read the relevant pages
 
-Open the selected pages and follow `[[wikilinks]]` (page name = filename) as needed — domain → concept → source and project index → architecture/workflow/decisions → source chains are normal for multi-hop questions. For project questions, read its index and relevant supporting pages; for broad topic questions, consult the domain page and verify its supporting evidence. Distinguish proposed and adopted project decisions. Use qualified links such as `[[projects/home-lab/decisions]]` and `[[projects/llm-wiki/index]]` to avoid ambiguous shared filenames.
+Open the selected pages and follow `[[wikilinks]]` using the wiki's link conventions as needed — domain → concept → source and project index → architecture/workflow/decisions → source chains are normal for multi-hop questions. For project questions, read its index and relevant supporting pages; for broad topic questions, consult the domain page and verify its supporting evidence. Distinguish proposed and adopted project decisions. Use qualified links such as `[[projects/home-lab/decisions]]` and `[[projects/llm-wiki/index]]` to avoid ambiguous shared filenames.
+
+Resolve each link to an existing file before relying on it. Separate the target from any `|display label` and `#heading`; retain the heading when citing a specific section. Prefer qualified paths. For a bare name with multiple matches, use the schema and linking page's context to disambiguate; if it remains ambiguous, report it instead of choosing silently. A broken link is a coverage gap, not evidence.
 
 If the index looks stale or incomplete, fall back to searching the wiki directly:
 
@@ -67,7 +69,11 @@ Use any pages the search finds that the index missed, and report the catalog dri
 
 ### 3. Synthesize an answer with citations
 
-Every substantive claim links to the wiki page that backs it — and through that page to its source summary (`[[sources/some-article]]`) and raw file (`raw/some-article.md`).
+Every substantive claim links to a page you opened and checked for support. A catalog entry or outgoing link alone does not establish the claim. Trace source-backed claims through the page to its source summary (`[[sources/some-article]]`) and raw file (`raw/some-article.md`) when available. Open the raw source for exact quotations, quantitative details, disputed claims, or discrepancies between summaries; do not imply you verified raw content you did not read.
+
+If a summary or raw source is missing or inaccessible, state which evidence you could check and limit the conclusion accordingly. Project decisions and user-authored notes can be cited directly as records of that project's decisions or notes; do not invent external provenance for them. Preserve uncertainty, scope, and dates from the evidence. Distinguish a source's publication date from a page's update date when assessing conflicts or freshness.
+
+Use the wiki's citation style in saved pages. In chat, use links the host can open (for example, Markdown links to actual files) when it does not resolve wikilinks. The wikilinks below illustrate wiki targets, not proof that the chat renderer can navigate them.
 
 Label what each part of the answer is. Never present a gap as knowledge:
 
@@ -89,7 +95,7 @@ These formats are query-time outputs, not stored wiki structure — unless the r
 
 When the answer is a durable artifact — a comparison, analysis, timeline, discovered connection — offer to save it (or save it directly if the user's workflow clearly wants that; ask when unsure):
 
-1. Write `wiki/analyses/<slug>.md` (kebab-case slug) with frontmatter and wikilinks to everything it draws on:
+1. Check whether `wiki/analyses/<slug>.md` already exists before writing. Update it only when the requested save or established workflow covers revising that analysis; otherwise choose a distinct descriptive kebab-case slug and check it is unused. Do not overwrite an existing analysis merely because its title matches. Use the actual current date and the wiki's schema for frontmatter; list only source pages used and verified, without inventing missing sources. Write the analysis with wikilinks to its evidence:
 
    ```markdown
    ---

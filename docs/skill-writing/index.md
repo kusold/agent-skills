@@ -56,6 +56,8 @@ The reference is loaded only for Codex-specific work. Its commands use tools fro
 
 The [format reference](../../skills/skill-writing/references/agent-skills.md) records portable requirements and links to official authoring guides, reviewed on 2026-10-22. It distinguishes the standard from host-specific extensions and validator limitations. The [script checklist](../../skills/skill-writing/references/scripts.md) applies when adding executable helpers.
 
+The format reference includes an isolated `uvx` command for the official validator when `skills-ref` is not installed. It states the fallback's prerequisites and how to report inspection when automated validation is unavailable.
+
 The full [specification snapshot](../../skills/skill-writing/references/specification.md) is bundled for offline checks of exact rules and examples. It was extracted with Defuddle 0.19.5 and checked against the site's native Markdown on 2026-10-22. The file records its source, CC BY 4.0 attribution, and conversion changes. It loads only when detailed format guidance is needed; the short checklist remains the normal entry point. Refresh instructions in the format reference require reviewing the conversion before replacing the snapshot.
 
 The official documentation informed additional guidance on grounding skills in actual project knowledge, choosing useful defaults, separating discovery from outcome checks, reviewing execution traces, and evaluating against a baseline. Sources: [best practices](https://agentskills.io/skill-creation/best-practices), [descriptions](https://agentskills.io/skill-creation/optimizing-descriptions), [evaluation](https://agentskills.io/skill-creation/evaluating-skills), and [scripts](https://agentskills.io/skill-creation/using-scripts).

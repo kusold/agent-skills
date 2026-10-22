@@ -14,7 +14,7 @@ The module system uses `builtins.functionArgs` to determine which arguments to p
 # - pkgs
 # - system
 # - config
-# - ... (other available arguments)
+# The ellipsis permits extra attributes; it does not request extra module arguments.
 
 # ❌ WRONG - catch-all doesn't work
 args: {
@@ -187,7 +187,7 @@ Available at flake level (outside perSystem):
 ```nix
 # Top-level module — bind inputs here; the withSystem callback only
 # receives perSystem arguments (config, pkgs, self', inputs', ...)
-top@{ inputs, ... }: {
+{ inputs, withSystem, ... }: {
   flake.nixosConfigurations.machine = withSystem "x86_64-linux" (
     { config, pkgs, self', inputs', ... }:
       # All per-system arguments available here
@@ -236,62 +236,42 @@ in {
 
 ### moduleWithSystem
 
-Brings perSystem arguments into top-level module scope:
+Use this to export a NixOS module that can access packages from the defining flake. The first function receives per-system arguments; the returned function is the NixOS module. Its system comes from the consuming NixOS configuration.
 
 ```nix
-imports = [
-  (moduleWithSystem ({ config, system, ... }: {
-    # Can use both top-level and per-system config
-    flake.someAttr = config.packages.myapp;
-  }))
-];
+{ moduleWithSystem, ... }: {
+  flake.nixosModules.default = moduleWithSystem (
+    perSystem@{ config, ... }:
+    { ... }: {
+      environment.systemPackages = [ perSystem.config.packages.myapp ];
+    }
+  );
+}
 ```
 
-**When to use**: When you need both top-level and per-system values in the same module without using withSystem repeatedly.
+Define `packages.myapp` in the same flake's `perSystem`. Do not put this exported NixOS module in flake-parts `imports`.
 
 ## The @ Pattern
 
-Access multiple scopes without shadowing:
+An `@` binding names the arguments of its own function. Capture the **outer** module to keep access to top-level configuration when an inner function names `config`:
 
 ```nix
-{ config, ... }: {
-  myTopLevelOption = "foo";
-
-  perSystem = toplevel@{ config, pkgs, ... }: {
-    # config          = per-system config
-    # toplevel.config = top-level config
-
-    packages.example = pkgs.writeText "value"
-      toplevel.config.myTopLevelOption;
-  };
-}
-```
-
-**Without @**, you'd lose access to top-level config:
-```nix
-{ config, ... }: {
-  myTopLevelOption = "foo";
+toplevel@{ config, ... }: {
+  systems = [ "x86_64-linux" ];
 
   perSystem = { config, pkgs, ... }: {
-    # config is now perSystem config
-    # No way to access top-level config!
+    packages.example = pkgs.writeText "target-systems"
+      (builtins.concatStringsSep "," toplevel.config.systems);
+    devShells.default = pkgs.mkShell {
+      packages = [ config.packages.example ];
+    };
   };
 }
 ```
 
-**Pattern variations**:
-```nix
-# Capture top-level in perSystem
-perSystem = toplevel@{ config, ... }: { ... }
+Here `config` inside `perSystem` is the per-system configuration; `toplevel.config` remains the outer configuration. Writing `perSystem = toplevel@{ config, ... }: ...` instead captures per-system arguments and does not recover the outer scope.
 
-# Capture per-system in nested module
-perSystem = { config, ... }: {
-  imports = [ (persystem@{ config, ... }: {
-    # persystem.config = perSystem config
-    # config = current module config
-  }) ];
-}
-```
+Alternatively, bind the outer value to a distinct name in a `let` (for example, `topConfig = config;`) before entering the inner function. An `@` binding is a convenience, not a requirement.
 
 ## Accessing allSystems
 
@@ -309,23 +289,9 @@ perSystem = { config, ... }: {
 
 ## Common Pitfalls
 
-### Forgetting the @ Symbol
+### Capturing the Wrong Scope
 
-```nix
-# ❌ WRONG - can't access top-level
-{ config, ... }: {
-  perSystem = { config, ... }: {
-    # Can't access top-level config here!
-  };
-}
-
-# ✅ CORRECT - use @
-{ config, ... }: {
-  perSystem = toplevel@{ config, ... }: {
-    # Can access both now
-  };
-}
-```
+Put `toplevel@` on the top-level function, not on `perSystem`. Both functions can name `config`; the binding location determines which one `toplevel.config` denotes. See [The @ Pattern](#the--pattern).
 
 ### Using Catch-All Arguments
 
@@ -374,6 +340,8 @@ perSystem = { self', config, ... }: {
 **For advanced scenarios**:
 - `@` pattern - Access multiple scopes
 - `final` - Work with easyOverlay
-- `moduleWithSystem` - Bring perSystem args to top-level
+- `moduleWithSystem` - Export modules with access to the defining flake’s perSystem arguments
 
 Related: [Back to main guide](SKILL.md) | [Overlays guide](overlays.md) | [Advanced patterns](advanced.md)
+
+Source: [upstream module arguments reference](https://flake.parts/module-arguments.html), including `withSystem`, `moduleWithSystem`, and function signature inspection.

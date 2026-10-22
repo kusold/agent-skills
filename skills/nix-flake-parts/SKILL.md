@@ -1,6 +1,6 @@
 ---
 name: nix-flake-parts
-description: Expert guidance for the flake-parts framework in Nix flakes. Use when converting flakes to flake-parts ("convert my flake to flake-parts"), organizing modular flake configurations, working with perSystem ("how do perSystem and flake differ?"), creating reusable flake modules, handling overlays, or debugging flake-parts issues ("why is `final` undefined", "argument 'pkgs' missing").
+description: Expert guidance for the flake-parts framework in Nix flakes. Use when converting flakes to flake-parts ("convert my flake to flake-parts"), organizing modular flake configurations, working with perSystem ("how do perSystem and flake differ?"), creating reusable flake modules, handling overlays, or debugging flake-parts issues ("why is `final` undefined", "argument 'pkgs' missing"). For the architecture where every file is a top-level module, use nix-dendritic-flake.
 metadata:
   source: https://raw.githubusercontent.com/Omegaice/dotfiles/refs/heads/master/.claude/skills/using-flake-parts/SKILL.md
 ---
@@ -88,7 +88,7 @@ Only arguments you **name in the function signature** are passed — the module 
 | `inputs` | top level only | The flake's inputs attrset |
 | `withSystem` | top level only | Enter a system's scope (see below) |
 | `getSystem` | top level only | Retrieve a specific system's perSystem config |
-| `moduleWithSystem` | top level only | Bring perSystem arguments into a top-level module |
+| `moduleWithSystem` | top level only | Export modules with access to this flake’s perSystem arguments |
 
 `inputs`, `self`, `withSystem`, `getSystem`, and `moduleWithSystem` are top-level arguments only — current flake-parts throws if you name them in a `perSystem` signature. Inside `perSystem`, use `inputs'` and `self'`.
 
@@ -102,16 +102,17 @@ perSystem = { pkgs, system, inputs', self', ... }: {
 };
 ```
 
-**The @ pattern** accesses both scopes without shadowing:
+**The @ pattern** captures the arguments of the function where it appears. Bind it on the outer module to retain top-level `config` when `perSystem` names its own `config`:
 
 ```nix
-{ config, ... }: {
-  myTopLevelOption = "foo";
+toplevel@{ config, ... }: {
+  systems = [ "x86_64-linux" ];
 
-  perSystem = toplevel@{ config, pkgs, ... }: {
+  perSystem = { config, pkgs, ... }: {
     # config          = per-system config
     # toplevel.config = top-level config
-    packages.example = pkgs.writeText "value" toplevel.config.myTopLevelOption;
+    packages.example = pkgs.writeText "target-systems"
+      (builtins.concatStringsSep "," toplevel.config.systems);
   };
 }
 ```
@@ -123,7 +124,7 @@ Full reference — `_module.args` customization, `functionArgs` inspection, pitf
 `withSystem` enters a system's scope so `flake`-level outputs (like NixOS configs) can use perSystem values. Bind `inputs` at the top level; the callback only receives perSystem arguments:
 
 ```nix
-top@{ inputs, ... }: {
+{ inputs, withSystem, ... }: {
   flake.nixosConfigurations.machine = withSystem "x86_64-linux" (
     { config, ... }:
       inputs.nixpkgs.lib.nixosSystem {
@@ -233,9 +234,11 @@ Don't access `self` directly in modules. In `perSystem`, use `self'` or `config`
 Use `@` syntax to access both top-level and perSystem config:
 
 ```nix
-perSystem = toplevel@{ config, ... }: {
-  # config = perSystem config
-  # toplevel.config = top-level config
+toplevel@{ config, ... }: {
+  perSystem = { config, ... }: {
+    # config = perSystem config
+    # toplevel.config = top-level config
+  };
 }
 ```
 

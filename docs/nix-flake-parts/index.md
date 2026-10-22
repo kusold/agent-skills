@@ -21,7 +21,8 @@ Expert guidance for [flake-parts](https://flake.parts), the framework that appli
 - Converting standard `outputs = { ... }: { packages = forAllSystems ... }` flakes to `mkFlake` with a `systems` list
 - `perSystem` vs `flake`: which outputs belong per-system (packages, devShells, apps, checks, formatter) and which are unique (nixosConfigurations, homeConfigurations)
 - Module arguments: `pkgs`, `system`, `config`, `inputs'` and `self'` (system pre-selected), `final` (with easyOverlay), plus top-level `withSystem`, `getSystem`, and `moduleWithSystem`
-- The `@` pattern for accessing top-level and per-system `config` without shadowing
+- The `@` pattern bound on the outer module for accessing top-level and per-system `config` without shadowing
+- `moduleWithSystem` for exporting NixOS modules that use packages from the defining flake
 - `importApply` for passing flake-level context (like `withSystem`) into imported modules
 - The `easyOverlay` flakeModule — imported at the **top level** of your mkFlake module — and the `final` vs `pkgs` distinction
 - Exporting reusable `flakeModules` for other flakes to consume

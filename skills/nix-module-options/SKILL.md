@@ -17,19 +17,19 @@ Ready-made `nix eval --impure` expressions that evaluate the upstream NixOS and 
 ## Prerequisites
 
 - **nix** (with flakes) and **jq**
-- Run from inside a flake repository — expressions use `builtins.getFlake (builtins.toString ./.)`
+- Run from the flake root (the directory containing `flake.nix`) — expressions use `builtins.getFlake (builtins.toString ./.)`
 - A `nixpkgs` flake input (any flake); a `home-manager` input additionally for Home Manager queries
-- Optional: a flake-parts flake with `debug = true;` set in one of its modules (Backend A — overlay-aware `pkgs`; measured at the same speed as Backend B)
+- Optional: a flake-parts flake with `debug = true;` set in one of its modules (Backend A — overlay-aware `pkgs`)
 
 ## Selecting a Backend
 
 Detect which backend your flake supports:
 
 ```bash
-nix eval --impure --expr '(builtins.getFlake (builtins.toString ./.)) ? currentSystem'
+nix eval --impure --json --expr '(builtins.getFlake (builtins.toString ./.)) ? currentSystem'
 ```
 
-- `true` → **Backend A (flake-parts)** — reuses your pre-evaluated, overlay-aware `pkgs` via `currentSystem.allModuleArgs`. Requires `debug = true;` in a flake-parts module. Speed is at parity with Backend B — choose it for overlay-awareness.
+- `true` → **Backend A (flake-parts)** — reuses your pre-evaluated, overlay-aware `pkgs` via `currentSystem.allModuleArgs`. Requires `debug = true;` in a flake-parts module.
 - `false` → **Backend B (any flake)** — instantiates `pkgs` from `flake.inputs.nixpkgs` directly. Works in any flake with a `nixpkgs` input; not overlay-aware.
 
 Both backends expose identical names to queries: `lib`, `hmLib`, `hmOpts` (Home Manager option tree), `nixosOpts` (NixOS option tree). Nix is lazy — only the option tree your query touches gets evaluated.
@@ -37,7 +37,7 @@ Both backends expose identical names to queries: `lib`, `hmLib`, `hmOpts` (Home 
 ## Backend A: flake-parts (`debug = true`)
 
 ```bash
-nix eval --impure --expr '
+nix eval --impure --json --expr '
   let
     flake = builtins.getFlake (builtins.toString ./.);
     args = flake.currentSystem.allModuleArgs;
@@ -46,6 +46,8 @@ nix eval --impure --expr '
       hm = import "${flake.inputs.home-manager}/modules/lib" { lib = self; };
     });
     hmOpts = (hmLib.evalModules {
+      class = "homeManager";
+      specialArgs.modulesPath = "${flake.inputs.home-manager}/modules";
       modules = import "${flake.inputs.home-manager}/modules/modules.nix" {
         lib = hmLib;
         pkgs = args.pkgs;
@@ -54,7 +56,7 @@ nix eval --impure --expr '
     }).options;
     nixosOpts = (lib.evalModules {
       modules = import "${flake.inputs.nixpkgs}/nixos/modules/module-list.nix" ++ [
-        { nixpkgs.hostPlatform = args.system; }
+        { nixpkgs.hostPlatform = args.system; nixpkgs.pkgs = args.pkgs; }
       ];
     }).options;
   in
@@ -65,7 +67,7 @@ nix eval --impure --expr '
 ## Backend B: any flake (nixpkgs input only)
 
 ```bash
-nix eval --impure --expr '
+nix eval --impure --json --expr '
   let
     flake = builtins.getFlake (builtins.toString ./.);
     system = builtins.currentSystem;
@@ -75,6 +77,8 @@ nix eval --impure --expr '
       hm = import "${flake.inputs.home-manager}/modules/lib" { lib = self; };
     });
     hmOpts = (hmLib.evalModules {
+      class = "homeManager";
+      specialArgs.modulesPath = "${flake.inputs.home-manager}/modules";
       modules = import "${flake.inputs.home-manager}/modules/modules.nix" {
         lib = hmLib;
         inherit pkgs;
@@ -83,7 +87,7 @@ nix eval --impure --expr '
     }).options;
     nixosOpts = (lib.evalModules {
       modules = import "${flake.inputs.nixpkgs}/nixos/modules/module-list.nix" ++ [
-        { nixpkgs.hostPlatform = system; }
+        { nixpkgs.hostPlatform = system; nixpkgs.pkgs = pkgs; }
       ];
     }).options;
   in
@@ -106,7 +110,9 @@ Add `--apply 'o: o != null'` to the `nix eval` command — it prints `true` or `
 
 ### Get full option documentation
 
-Pipe to `jq` for readable output:
+Both backend commands include `--json`; keep it when piping to `jq`. Without it, `nix eval` prints Nix syntax, which `jq` cannot parse.
+
+Pipe documentation results to `jq` for readable output:
 
 - `lib.optionAttrSetToDocList hmOpts.programs.git`
 - `lib.optionAttrSetToDocList nixosOpts.services.nginx.virtualHosts`
@@ -118,15 +124,22 @@ Add `| jq -r '.[]'`:
 - `builtins.attrNames hmOpts.programs`
 - `builtins.attrNames nixosOpts.services`
 
-### Option paths with literal dots
+### Submodule options and literal dots
 
-Quote the segment: `nixosOpts.services.nginx.virtualHosts."foo.bar"`. Unquoted, `foo.bar` parses as nested attributes `foo` → `bar`.
+`virtualHosts` is an option containing an attribute set of submodules, not an option subtree indexed by configured host names. Get its nested declarations with `lib.optionAttrSetToDocList nixosOpts.services.nginx.virtualHosts`; docs use placeholders such as `<name>`. To inspect its suboption tree directly:
+
+```nix
+(nixosOpts.services.nginx.virtualHosts.type.getSubOptions
+  [ "services" "nginx" "virtualHosts" ]).enableACME
+```
+
+For configured **values**, use the actual configuration output, for example `flake.nixosConfigurations.HOST.config.services.nginx.virtualHosts."foo.bar"`. Quote attribute names containing literal dots; unquoted `foo.bar` selects nested attributes.
 
 ## Session Mode: Batch Queries in One `nix repl`
 
-Every `nix eval` invocation re-pays the module-tree merge (~1s for Home Manager, ~2.5–3.7s for NixOS warm) — the merge dominates, so query shape barely matters. For **2–3 or more queries in one task** (the common "does it exist → what options → what defaults" flow), load the backend once in a single `nix repl` session and issue every query there: measured ~3× faster for 5 queries (2.7s vs 7.4s as separate spawns), ~30ms per additional query after load. `nix repl` is impure by default, even on machines with `pure-eval = true`.
+For several related queries, reuse one `nix repl` session to avoid repeatedly evaluating the module tree. Actual savings depend on the pinned inputs, cache state, and machine.
 
-Pipe the backend's bindings as repl **assignments** — a top-level `let … in` does NOT define repl bindings and silently discards them:
+Pipe bindings as REPL assignments, with each complete assignment on one physical line. Multiline assignments in piped input can be parsed as separate commands. A top-level `let … in` evaluates an expression without retaining its local bindings:
 
 ```bash
 nix repl <<'EOF'
@@ -134,19 +147,9 @@ nix repl <<'EOF'
 f = builtins.getFlake (builtins.toString ./.)
 pkgs = import f.inputs.nixpkgs { system = builtins.currentSystem; }
 lib = pkgs.lib
-hmLib = lib.extend (self: super: {
-  hm = import "${f.inputs.home-manager}/modules/lib" { lib = self; };
-})
-hmOpts = (hmLib.evalModules {
-  modules = import "${f.inputs.home-manager}/modules/modules.nix" {
-    lib = hmLib; inherit pkgs; check = false;
-  };
-}).options
-nixosOpts = (lib.evalModules {
-  modules = import "${f.inputs.nixpkgs}/nixos/modules/module-list.nix" ++ [
-    { nixpkgs.hostPlatform = builtins.currentSystem; }
-  ];
-}).options
+hmLib = lib.extend (self: super: { hm = import "${f.inputs.home-manager}/modules/lib" { lib = self; }; })
+hmOpts = (hmLib.evalModules { class = "homeManager"; specialArgs.modulesPath = "${f.inputs.home-manager}/modules"; modules = import "${f.inputs.home-manager}/modules/modules.nix" { lib = hmLib; inherit pkgs; check = false; }; }).options
+nixosOpts = (lib.evalModules { modules = import "${f.inputs.nixpkgs}/nixos/modules/module-list.nix" ++ [ { nixpkgs.hostPlatform = builtins.currentSystem; nixpkgs.pkgs = pkgs; } ]; }).options
 
 # Queries — any entry from the Query Catalog, one per line
 nixosOpts.services.nginx.enable or null
@@ -156,7 +159,7 @@ builtins.attrNames hmOpts.programs
 EOF
 ```
 
-For Backend A, replace the first two binding lines with `args = f.currentSystem.allModuleArgs;` and `pkgs = args.pkgs;`, and use `nixpkgs.hostPlatform = args.system;`.
+For Backend A, replace the first two binding lines with `f = builtins.getFlake (builtins.toString ./.)`, `args = f.currentSystem.allModuleArgs`, and `pkgs = args.pkgs` (one assignment per line), and use `nixpkgs.hostPlatform = args.system;`.
 
 ## Common Option Categories
 
@@ -184,7 +187,7 @@ For Backend A, replace the first two binding lines with `args = f.currentSystem.
 
 ## Option Documentation Fields
 
-`lib.optionAttrSetToDocList` returns structured documentation:
+`lib.optionAttrSetToDocList` returns structured documentation. `default` and `example` are optional and may be rendered literal-expression records rather than raw values:
 
 - **name** - Full option path (e.g., `programs.git.enable`)
 - **description** - What the option does (markdown formatted)
@@ -210,7 +213,6 @@ For Backend A, replace the first two binding lines with `args = f.currentSystem.
 1. **Pre-evaluated** - `pkgs` already instantiated by flake-parts
 2. **System-aware** - `args.system` provides the current system automatically
 3. **Overlay-aware** - uses your instantiated `pkgs`, so your overlays can surface in the rendered defaults of `package`-type options
-4. **Same speed as Backend B** - measured at parity; the module-tree merge dominates both backends. Choose Backend A for the overlay-aware `pkgs`, not for speed.
 
 Backend B re-instantiates `pkgs` without your overlays, so package-option defaults reflect plain nixpkgs.
 
@@ -224,7 +226,7 @@ These expressions query **upstream modules only**:
 
 To query user's actual config (including custom modules):
 ```bash
-nix eval --impure --expr '
+nix eval --impure --json --apply 'o: { inherit (o) description; type = o.type.description; }' --expr '
   (builtins.getFlake (builtins.toString ./.))
   .homeConfigurations.USERNAME.options.OPTION.PATH
 '
@@ -236,29 +238,40 @@ nix eval --impure --expr '
 2. **Filter visible options** - Use `select(.visible == true)` to hide internal options
 3. **Check existence first** - `--apply 'o: o != null'` before pulling full docs
 4. **Reference declarations** - Use `.declarations` field to find upstream source
-5. **Batch with Session Mode** - For 2–3+ queries, one `nix repl` session beats repeated `nix eval` spawns ~3×
+5. **Batch with Session Mode** - Reuse bindings for several related queries
 6. **Approximate lookups** - When the pinned revision doesn't matter, instant channel-snapshot sources exist (home-manager-options.extranix.com static JSON, search.nixos.org options API) — but they are channel snapshots, not your lockfile
 
 ## Troubleshooting
 
 ### `error: attribute 'currentSystem' missing`
-The `currentSystem` (and `allSystems`, `debug`) flake outputs exist only when a flake-parts module sets `debug = true;`. Either:
-- Enable it: add `debug = true;` to one of your flake-parts modules and **commit (or at least `git add`) the change** — `builtins.getFlake` reads the git tree, so uncommitted edits are invisible. Then use Backend A.
-- Or skip it: use Backend B, which needs no flake-parts at all.
+The `currentSystem` (and `allSystems`, `debug`) flake outputs exist only when a flake-parts module sets `debug = true;`.
+
+Prefer Backend B if debug mode is absent. If enabling it is within the requested scope, add `debug = true;` to a flake-parts module. Local Git flakes include edits to tracked files without a commit; newly created files must be tracked (for example, `git add path/to/module.nix`). Do not stage unrelated files just to query options.
 
 ### "path does not exist" error
-The flake path must exist. This skill uses `builtins.getFlake (builtins.toString ./.)` which refers to the current project directory. Ensure you're running commands from within your flake repository.
+The flake path must exist. This skill uses `builtins.getFlake (builtins.toString ./.)` which refers to the current project directory. Run from the directory containing the intended `flake.nix`.
 
 ### "attribute does not exist" error
 The option path is wrong. Check:
 - Correct category (e.g., `programs` vs `services`)
 - Correct nesting (e.g., `programs.git.enable` not `programs.git`)
 - Option exists in upstream (not a custom module)
-- Segments containing literal dots must be quoted: `nixosOpts.services.nginx.virtualHosts."foo.bar"`
+- Dynamic submodule names are not attributes in the upstream option tree; use `type.getSubOptions` or the documentation list, as shown above
 - Category paths like `nixosOpts.services` are attribute sets, not options — they trivially "exist"; existence checks are only meaningful for leaf options
 
+### Documentation forces missing configuration
+
+Existence checks and category listings can succeed while full documentation fails: serializing a default or example may force a required username, home directory, platform-specific package, or other configuration. Narrow the subtree or project only the needed fields **inside the Nix expression** before JSON serialization:
+
+```nix
+map (o: { inherit (o) name type description declarations; })
+  (lib.optionAttrSetToDocList hmOpts.programs.git)
+```
+
+Filtering with `jq` happens after serialization and cannot prevent such evaluation errors. If values are still required, report the missing context rather than inventing user configuration or changing the lockfile.
+
 ### Evaluation timing
-Each query re-pays the upstream option-tree merge: ~1s for Home Manager, ~2.5–3.7s for NixOS warm on a fast machine, much longer cold while locked inputs are fetched. Query shape barely matters — existence checks, full docs, and category listings cost about the same, because the merge dominates. Separate `nix eval` spawns re-pay that merge every time: Nix's eval cache never serves values to `nix eval` (only leaf attrpath metadata is cached; intermediate results are not). Use Session Mode for multiple queries. For heavy recurring use, materialize the docs once as a derivation (`lib.nixosOptionsDoc`, Home Manager's `lib.hmOptionsDoc`) and `nix build` it — the build cache does persist built results, unlike the eval cache.
+Fetching locked inputs and evaluating upstream modules can take time. Reuse Session Mode for related queries rather than relying on a fixed timing estimate. For recurring documentation needs, use the pinned upstream documentation builders and cache their build results; inspect their interfaces at that revision before invoking them.
 
 ### Wrong module system
 - Home Manager queries use `hmOpts` (HM modules via `hmLib.evalModules`)
@@ -266,5 +279,5 @@ Each query re-pays the upstream option-tree merge: ~1s for Home Manager, ~2.5–
 
 ## Related Skills
 
-- **[nix-flake-parts](../nix-flake-parts/SKILL.md)** - the flake-parts framework skill; its Debugging section documents the `debug = true;` output and `currentSystem.allModuleArgs` infrastructure Backend A builds on
-- **[nix-dendritic-flake](../nix-dendritic-flake/SKILL.md)** - every-file-is-a-top-level-module flake architecture built on flake-parts
+- **nix-flake-parts** - the flake-parts framework skill; its Debugging section documents the `debug = true;` output and `currentSystem.allModuleArgs` infrastructure Backend A builds on
+- **nix-dendritic-flake** - every-file-is-a-top-level-module flake architecture built on flake-parts

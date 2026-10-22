@@ -1,6 +1,6 @@
 ---
 name: vja-vikunja
-description: Manage Vikunja tasks using the vja CLI. Use when the user asks to "add a task", "list tasks", "show my tasks", "mark task done", "edit task", "create a project", "what's due", or any task management action with Vikunja.
+description: Manage Vikunja tasks, projects, labels, and buckets using the vja CLI. Use for "add a task", "list my tasks", "mark task done", "edit task", "create a project", or "what's due" when Vikunja or vja is named or established as the task system.
 metadata:
   author: mikekusold
   version: "1.0.0"
@@ -29,6 +29,15 @@ Configuration lookup order:
 4. `~/.vjacli/vja.rc` (legacy fallback)
 
 Use the existing configuration location. Do not print credentials or token files.
+
+## Resolve requests and verify changes
+
+Use this skill when Vikunja or `vja` is the requested or established task system. A task in a code change, another task service, or a general project plan does not by itself select Vikunja.
+
+- Use a task ID supplied by the user. For a title-based request, search with `vja ls --json --title="pattern"` and inspect IDs, titles, and projects before editing. Title, project, and label list filters use regular expressions; escape metacharacters for literal searches and check returned values. If several tasks fit and context does not resolve the target, ask which one.
+- `vja ls` excludes completed tasks. Include `--include-completed` when looking for completed tasks, reopening a task, or checking whether an apparently missing task was already finished. Use `vja show ID --json` for a known task's current state.
+- Apply the requested state: `--done=true` completes and `--done=false` reopens. Label edits toggle membership; inspect current labels and only toggle when the requested add/remove requires a change. Do not add `--force` unless creating the missing label is within the user's request.
+- After adding or editing a task, read it with `vja show ID --json` and report the ID and resulting change. In vja 6.0.3, label edits return a task object captured before the label toggle, so that output alone does not verify label membership. If a request times out or a batch partly fails, inspect the affected state before retrying: adds and clones can duplicate tasks, while label toggles and deferrals can undo or repeat changes. Report unresolved outcomes instead of claiming success.
 
 ## Commands Reference
 
@@ -66,6 +75,9 @@ vja ls
 
 # JSON output
 vja ls --json
+
+# Include completed tasks
+vja ls --include-completed --json
 
 # Specific tasks by ID
 vja ls 10 13 14
@@ -133,11 +145,14 @@ vja edit 1 --no-star
 # Set due date with reminder
 vja edit 1 --due="in 4 days at 15:00" -r
 
-# Toggle label (use --force to create new label)
+# Toggle label after checking current membership; --force creates a missing label
 vja edit 1 -l @work
 
 # Mark as done
 vja edit 1 --done="true"
+
+# Reopen a task
+vja edit 1 --done=false
 
 # Shortcut to toggle done
 vja check 1

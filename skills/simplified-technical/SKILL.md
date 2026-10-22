@@ -16,6 +16,8 @@ A rewrite changes style, not facts.
 
 - Keep every fact, condition, number, scope qualifier, time relationship, and degree of certainty from the source. Preserve the strength of requirements and recommendations.
 - Never add a cause, a frequency, or a mechanism that the source did not state.
+- Preserve commands, code, identifiers, paths, URLs, and exact UI labels. Rewrite the surrounding prose; do not apply word substitutions inside these literals.
+- Do not guess what an ambiguous pronoun, condition, or technical term means. Keep the ambiguity if a faithful rewrite is possible. If the requested result requires resolving it, ask a focused question instead of inventing a meaning.
 - If a shorter phrasing would lose precision, keep the longer phrasing. Say which phrase you kept and why.
 
 ## Words
@@ -27,11 +29,11 @@ A rewrite changes style, not facts.
 - Pick one meaning per word and keep it. If "enter" means "type into a field", do not also use it to mean "go into".
 - Keep technical nouns and domain terms exactly as they are ("JWT", "Kubernetes pod", "cache invalidation"). Do not simplify terminology the reader needs.
 - Do not drop articles (a, an, the) to save space.
-- No noun stacks longer than three words. Rewrite "database connection pool max size setting" as "the max size setting for the database connection pool".
+- Avoid noun stacks longer than three words, except inside an exact technical term or UI label. Rewrite "database connection pool max size setting" as "the max size setting for the database connection pool" when it is prose, not a literal label.
 
 ## Sentences
 
-- Keep sentences to 20 words or fewer (25 for descriptive text).
+- Aim for 20 words or fewer per sentence (25 for descriptive text). Preserve meaning and exact terms when these limits conflict with precision.
 - One idea or one instruction per sentence.
 - Do not use semicolons. Split the sentence into two sentences.
 - Paragraphs: one topic, six sentences maximum.
@@ -87,6 +89,16 @@ Consider these substitutions only when they preserve the meaning in context:
 
 ## Examples
 
+**Exact label — before:**
+
+> Prior to initiating the service, verify the Database Connection Pool Maximum Size setting.
+
+**After:**
+
+> Before you start the service, check the Database Connection Pool Maximum Size setting.
+
+The setting name stays unchanged so the reader can find it in the interface.
+
 **Description — before:**
 
 > The authentication service utilizes JSON Web Tokens in order to facilitate stateless verification of user identity, with expired tokens being automatically refreshed.
@@ -129,6 +141,7 @@ For tool descriptions, error messages, and inter-agent instructions, prioritize 
 ## Output
 
 - Give the rewritten text only. Do not add a preamble, a change summary, or an offer to explain more.
+- If unresolved source ambiguity prevents the requested result, ask the necessary question instead of presenting a guessed rewrite.
 - When you keep a longer phrasing to preserve precision, add one line after the text: "Kept as-is: <phrase> (<reason>)".
 - When the user asks what changed ("show the diff", "what did you change"), give a table of rule, before, and after.
 - When the input already complies, say so. Do not force changes onto clean text.

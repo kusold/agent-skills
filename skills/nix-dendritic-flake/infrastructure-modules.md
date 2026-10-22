@@ -37,20 +37,17 @@ Move values you used to pass via `specialArgs` into top-level options. Keep them
     type = lib.types.singleLineStr;
     default = "myuser";
   };
-
-  options.stateVersion = lib.mkOption {
-    type = lib.types.str;
-    default = "24.11";
-  };
 }
 ```
 
+Keep `system.stateVersion` and `home.stateVersion` on each existing host/user configuration. They are compatibility settings; a structural migration must preserve their existing values rather than replace them with a new shared default.
+
 ## nixos.nix - NixOS Configuration Infrastructure
 
-Turns `configurations.nixos.<name>.module` into `flake.nixosConfigurations` and generates `flake.checks` for each configuration's toplevel:
+Turns `configurations.nixos.<name>.module` into `flake.nixosConfigurations` and generates `flake.checks` for each configuration's toplevel. Use `inputs.nixpkgs.lib.nixosSystem`: the standalone library supplied to flake-parts as `lib` does not include this flake-provided constructor:
 
 ```nix
-{ lib, config, ... }:
+{ lib, config, inputs, ... }:
 {
   options.configurations.nixos = lib.mkOption {
     type = lib.types.lazyAttrsOf (
@@ -65,7 +62,7 @@ Turns `configurations.nixos.<name>.module` into `flake.nixosConfigurations` and 
 
   config.flake = {
     nixosConfigurations = lib.mapAttrs (
-      name: { module }: lib.nixosSystem { modules = [ module ]; }
+      name: { module }: inputs.nixpkgs.lib.nixosSystem { modules = [ module ]; }
     ) config.configurations.nixos;
 
     # Add checks for each configuration's toplevel
@@ -137,4 +134,11 @@ Turns `configurations.nixos.<name>.module` into `flake.nixosConfigurations` and 
 
 All three infrastructure modules share the same shape: a `configurations.<class>` option of `lazyAttrsOf (submodule { module = deferredModule; })`, mapped into the matching flake output. Add a new class (e.g. `nixos-darwin` combined configs) by following the same template.
 
-Since each host's toplevel lands in `flake.checks`, a plain `nix flake check` builds every host closure - use `nix flake check --no-build` for eval-only iteration (see Best Practices in [SKILL.md](SKILL.md)).
+Only the NixOS example above generates `flake.checks`. Use `nix flake check --no-build --all-systems` to evaluate checks across systems; a plain check builds checks for the current system. Evaluate Home Manager and nix-darwin explicitly when no checks cover them, for example:
+
+```bash
+nix eval --raw .#homeConfigurations.myuser.activationPackage.drvPath
+nix eval --raw .#darwinConfigurations.myhost.system.drvPath
+```
+
+Use names from the existing flake and preserve its platforms, overlays, and package configuration when adapting the infrastructure examples.

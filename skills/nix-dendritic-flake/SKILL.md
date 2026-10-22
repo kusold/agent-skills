@@ -19,7 +19,7 @@ The dendritic pattern uses a **top-level configuration** - commonly flake-parts,
 
 **Key benefit**: Files can share values via top-level `config`, eliminating `specialArgs` pass-through patterns.
 
-**Evaluation cost** (measured): import-tree auto-import adds single-digit milliseconds per ~300 modules versus explicit imports, and both the options-instead-of-`specialArgs` switch and the `deferredModule` indirection are within measurement noise - the pattern's wins are architectural, and the real cost is evaluating the host configurations themselves (see tiered validation in the Migration Checklist).
+Evaluation cost depends on the configuration; measure representative hosts before making performance claims. Use the tiered validation in the Migration Checklist while iterating.
 
 ## Anti-patterns
 
@@ -49,7 +49,7 @@ Exceptions are fine. A `my-package.pkg.nix` convention for callPackage-style fil
 
 ## Prerequisites
 
-Required flake inputs for dendritic setup:
+Add missing inputs to the existing flake. Preserve existing input URLs, `follows` relationships, and locked revisions; the `nixpkgs` URL below is an example for a new flake, not an instruction to upgrade an existing one:
 
 ```nix
 {
@@ -70,6 +70,8 @@ Required flake inputs for dendritic setup:
 ## Conversion Steps
 
 ### Step 1: Restructure flake.nix
+
+Inventory existing outputs, host names, platforms, overlays, package configuration, and per-host state versions before editing. Preserve them during the conversion. Keep old lower-level modules outside the auto-import tree until wrapped in top-level modules. Preserve `flake.lock`; use `nix flake lock` to add missing entries and review its diff instead of updating all inputs.
 
 **Before (traditional):**
 ```nix
@@ -118,27 +120,28 @@ Steps 5-6 - feature modules, host modules, the `flake.modules` pattern, and repl
 
 ## Migration Checklist
 
-1. [ ] Commit or branch first - this is a wholesale restructure; start from a clean tree
+1. [ ] Inspect `git status`; use a branch or isolated worktree and preserve user changes. Record existing outputs and host evaluation results for comparison
 2. [ ] Add `flake-parts` and `import-tree` inputs
 3. [ ] Convert `flake.nix` to use `mkFlake` with `import-tree`
-4. [ ] `git add -N modules/*.nix` as you create them - new files are invisible to flakes until git-tracked
+4. [ ] In a Git-backed flake, run `git add -N -- modules/` as files are created; this includes nested modules. Tracked edits are visible without a commit; untracked files are excluded
 5. [ ] Create `modules/systems.nix` with target systems
 6. [ ] Create `modules/flake-parts.nix` importing `flakeModules.modules`
 7. [ ] Create `modules/meta.nix` for shared options (move from `specialArgs`)
 8. [ ] Create infrastructure modules (`nixos.nix`, `darwin.nix`, etc.)
 9. [ ] Convert host configs to use `configurations.<class>.<name>.module`
 10. [ ] Refactor shared code into feature modules using `flake.modules`
-11. [ ] Remove `specialArgs` usage - use top-level options instead
-12. [ ] Validate - quick pass: `nix flake check --no-build` (eval-only; still evaluates every generated check, catching option/merge errors across all hosts); full pass: `nix-fast-build` (parallel eval + build of `.#checks`, remote-capable) or a plain `nix flake check` in CI
+11. [ ] Replace custom `specialArgs` pass-through with top-level options after migrating its consumers; preserve required upstream module interfaces
+12. [ ] Evaluate with `nix flake check --no-build --all-systems`. Explicitly evaluate Home Manager activation packages and nix-darwin toplevels if they are not exposed as checks. Compare output names and representative host derivations with the baseline; review the lockfile diff
+13. [ ] Build relevant checks on matching builders (`nix flake check` for the current system, or `nix-fast-build` with configured builders). Evaluation success does not establish build or activation success; do not switch or deploy hosts unless requested
 
 ## Best Practices
 
 1. **One feature per file** - Each file implements a single, named feature
 2. **File paths are feature names** - `modules/docker.nix` = docker feature
 3. **Declare options to model your system** - Own `options.* = lib.mkOption { type = lib.types.deferredModule; }` is the primary tool; `flake.modules.{nixos,darwin,homeManager}.featureName` is the built-in convenience for cross-platform features
-4. **No specialArgs** - Declare shared values as top-level options
+4. **Share values through top-level options** - Replace custom pass-through without changing interfaces required by upstream modules
 5. **Lazy evaluation** - Use `lib.types.lazyAttrsOf` for configuration options
-6. **Generate checks, validate in tiers** - Build `flake.checks` from configuration toplevels (see `nixos.nix` in [infrastructure-modules.md](infrastructure-modules.md)). This creates one check per host's toplevel, so a plain `nix flake check` builds every host closure - use `nix flake check --no-build` for eval-only validation while iterating, and [nix-fast-build](https://github.com/Mic92/nix-fast-build) (or a full check in CI) when you want the builds. Determinate Nix >= 3.16.3 parallelizes `nix flake check` by default.
+6. **Generate checks, validate in tiers** - The [NixOS infrastructure example](infrastructure-modules.md) exposes NixOS toplevels as checks. `nix flake check --no-build --all-systems` evaluates checks across systems; a plain `nix flake check` builds checks for the current system. Other configuration classes need their own checks or explicit target evaluation. Cross-system builds require suitable builders (see the [Nix command reference](https://nix.dev/manual/nix/2.34/command-ref/new-cli/nix3-flake-check.html)).
 
 ## Debugging
 
@@ -151,18 +154,18 @@ Enable debug mode first - the `debug` flake output only exists when this is set:
 }
 ```
 
-Commit the change (or `git add -N`), then inspect with `nix repl`:
+Save the change; use `git add -N -- modules/` for newly created modules in a Git-backed flake. Inspect with `nix repl`:
 
 ```bash
 nix repl
 :lf .
-debug.allSystems.x86_64-linux           # Inspect a specific system
-currentSystem.allModuleArgs.pkgs        # Inspect evaluated pkgs
-currentSystem.options.<option>.files    # See where values are defined
+allSystems.x86_64-linux                 # Inspect a specific system
+allSystems.x86_64-linux._module.args.pkgs # Inspect evaluated pkgs
+allSystems.x86_64-linux.options.<option>.declarations # Option declaration sites
 debug.options.systems.declarations      # See where options are declared
 ```
 
-Uncommitted changes are invisible to `:lf .` - it reads the git tree.
+For local Git-backed flakes, `:lf .` includes saved changes to tracked files; committing is unnecessary. New untracked files must first enter the index. The [flake-parts debug reference](https://flake.parts/options/flake-parts.html#opt-debug) documents `debug` (top level), `allSystems` (per-system), and `currentSystem` (impure mode only).
 
 ## Real-World Examples
 

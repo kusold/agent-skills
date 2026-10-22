@@ -31,11 +31,13 @@ It began in the late 1970s, when European airlines asked the aerospace industry 
 
 The same properties that make it good for maintenance manuals make it good for LLM output and modern technical documentation: it reduces needless complexity, favors one instruction per step, and keeps domain terminology intact. Rewrites preserve uncertainty, timing, and the distinction between recommendations and requirements.
 
+Commands, code, identifiers, paths, URLs, and exact interface labels stay unchanged. For example, the label "Database Connection Pool Maximum Size" keeps its wording even though it exceeds the usual noun-stack limit. Sentence length and word substitutions yield to precision. The agent preserves source ambiguity instead of guessing; it asks a focused question only when that ambiguity prevents the requested result.
+
 ## What "80%" Means Here
 
 | Kept (high value)                                              | Relaxed (hurts flow at full strictness)              |
 | -------------------------------------------------------------- | ---------------------------------------------------- |
-| Sentences ≤ 20 words (25 descriptive)                          | Full 900-word approved dictionary                    |
+| Sentence targets: ≤ 20 words (25 descriptive), with precision first | Full 900-word approved dictionary                 |
 | One idea or instruction per sentence                           | Strict one-word-one-part-of-speech enforcement       |
 | Simple tenses when they preserve meaning                      | Progressive, perfect, and conditional forms when needed for precision |
 | Active voice                                                   |                                                      |
@@ -43,7 +45,7 @@ The same properties that make it good for maintenance manuals make it good for L
 | Word substitution list for common jargon                       |                                                      |
 | Numbered steps, one action per step                            |                                                      |
 | Technical nouns and domain terms stay as-is                    |                                                      |
-| No noun stacks longer than three words                         |                                                      |
+| Avoid noun stacks longer than three words                       | Exact technical terms and interface labels stay intact |
 
 For regulated domains (aviation, defense) that require full ASD-STE100 compliance, use the [official standard](https://www.asd-ste100.org/) and appropriate expert review. This skill does not verify compliance.
 

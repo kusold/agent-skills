@@ -27,6 +27,15 @@ When available, run:
 skills-ref validate ./skills/example
 ```
 
+If `skills-ref` is not installed and `uvx` is available, run the official reference package in an isolated environment:
+
+```bash
+uvx --from 'git+https://github.com/agentskills/agentskills.git#subdirectory=skills-ref' \
+  skills-ref validate ./skills/example
+```
+
+This fallback requires Git and network access on the first run. Replace `./skills/example` with the skill directory being checked. If neither command is available, inspect the package checks above and report that automated validation was unavailable.
+
 The [reference library](https://github.com/agentskills/agentskills/tree/main/skills-ref) is demonstrative, not a complete behavioral validator. If a host validator rejects a standard field, report the compatibility difference rather than silently stripping it.
 
 ## Official authoring guides

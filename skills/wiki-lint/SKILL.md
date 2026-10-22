@@ -76,7 +76,7 @@ The checker prints JSON candidates with a kind, file, line, and message. Exit 0 
 Checks:
 
 - **Broken or ambiguous wikilinks.** Handles aliases, heading suffixes, optional `.md`, and relative links. Qualified targets keep their directory identity; unqualified names matching several pages are reported for review. Heading-only links stay on the current page. It checks destination pages, not whether individual headings exist.
-- **Broken raw references and unreferenced raw files.** Markdown links resolve relative to their page, with URL decoding and support for spaces/Unicode. Root-relative raw paths in `source:` fields, quoted strings, inline code, and simple bare paths are also recognized.
+- **Broken raw references and unreferenced raw files.** Markdown links resolve relative to their page, with URL decoding and support for spaces/Unicode. Link labels, titles, and remote destinations do not count as local raw references. Root-relative raw paths in `source:` fields, quoted strings, inline code, and simple bare paths are also recognized.
 - **Index drift.** Reports missing catalog entries and broken/ambiguous links in the index without conflating pages sharing a basename.
 - **Orphans.** Reports pages without inbound wikilinks from another page; index links and self-links do not count.
 - **Possible stubs.** Pages under 10 lines are candidates, not automatically incomplete.

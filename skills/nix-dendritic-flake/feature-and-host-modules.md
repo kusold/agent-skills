@@ -59,7 +59,7 @@ in
     ];
 
     nixpkgs.hostPlatform = "x86_64-linux";
-    system.stateVersion = config.stateVersion;
+    system.stateVersion = "24.11"; # Preserve this host's existing value
 
     # Host-specific config
     networking.hostName = "myhost";
@@ -123,6 +123,8 @@ outputs = inputs:
     (inputs.import-tree ./modules);
 ```
 
+Auto-import does not translate lower-level modules into flake-parts modules. Wrap existing NixOS/Home Manager/nix-darwin modules first or keep them outside this tree and import them from deferred modules.
+
 **Behavior:**
 - Imports all `*.nix` files under `./modules` recursively
 - Paths containing `/_` are ignored by default
@@ -135,6 +137,8 @@ modules/
   _wip.nix        # Ignored
   feature.nix     # Imported
 ```
+
+A `.pkg.nix` suffix is not excluded by default. Put callPackage-style expressions outside the scanned tree or under an underscore-prefixed directory. If retaining them inside the tree, configure and test a filter supported by the pinned import-tree version; see its [API documentation](https://github.com/denful/import-tree#documentation).
 
 ## Sharing Values Without specialArgs
 

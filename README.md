@@ -11,6 +11,7 @@ Browse the full documentation at **[skills.mikekusold.com](https://skills.mikeku
 - **[skill-writing](docs/skill-writing/index.md)** — Create, review, and improve agent skills with focused instructions and observable checks.
 - **[vja-vikunja](docs/vja-vikunja/index.md)** — Manage Vikunja tasks from the command line using `vja`, the CLI client for the self-hosted task manager [Vikunja](https://vikunja.io).
 - **[simplified-technical](docs/simplified-technical/index.md)** — Write or rewrite text in Simplified Technical English (ASD-STE100) at roughly 80% strictness: short sentences, clear verbs, active voice, and precise terminology.
+- **[defuddle](docs/defuddle/index.md)** — Extract clean article content and metadata from web pages as Markdown with the defuddle CLI, checking extractions for blocked, empty, or partial results.
 - **[wiki-ingest](docs/wiki-ingest/index.md)** — Add sources to an LLM-maintained wiki, preserving provenance and flagging conflicting claims.
 - **[wiki-query](docs/wiki-query/index.md)** — Answer questions from wiki evidence and optionally save durable analyses.
 - **[wiki-lint](docs/wiki-lint/index.md)** — Check wiki links, coverage, and consistency, then apply authorized fixes.

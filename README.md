@@ -12,6 +12,9 @@ Browse the full documentation at **[skills.mikekusold.com](https://skills.mikeku
 - **[vja-vikunja](docs/vja-vikunja/index.md)** — Manage Vikunja tasks from the command line using `vja`, the CLI client for the self-hosted task manager [Vikunja](https://vikunja.io).
 - **[simplified-technical](docs/simplified-technical/index.md)** — Write or rewrite text in Simplified Technical English (ASD-STE100) at roughly 80% strictness: short sentences, clear verbs, active voice, and precise terminology.
 - **[defuddle](docs/defuddle/index.md)** — Extract clean article content and metadata from web pages as Markdown with the defuddle CLI, checking extractions for blocked, empty, or partial results.
+- **[nix-dendritic-flake](docs/nix-dendritic-flake/index.md)** — Convert Nix flakes to the dendritic pattern with flake-parts, where every file is a top-level module with feature-named modules.
+- **[nix-flake-parts](docs/nix-flake-parts/index.md)** — Expert guidance for the flake-parts framework in Nix flakes: perSystem, overlays, and reusable modules.
+- **[nix-module-options](docs/nix-module-options/index.md)** — Query NixOS and Home Manager module options programmatically, in any flake with a nixpkgs input.
 - **[wiki-ingest](docs/wiki-ingest/index.md)** — Add sources to an LLM-maintained wiki, preserving provenance and flagging conflicting claims.
 - **[wiki-query](docs/wiki-query/index.md)** — Answer questions from wiki evidence and optionally save durable analyses.
 - **[wiki-lint](docs/wiki-lint/index.md)** — Check wiki links, coverage, and consistency, then apply authorized fixes.

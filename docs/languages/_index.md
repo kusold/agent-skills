@@ -7,4 +7,4 @@ bookCollapseSection: true
 
 Skills for specific programming and configuration languages, grouped under `skills/languages/` in the repository.
 
-- [Nix](../nix/) — flake authoring and maintenance
+- [Nix](nix/) — flake authoring and maintenance

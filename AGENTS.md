@@ -34,7 +34,7 @@ bookCollapseSection: true
 ---
 ```
 
-`bookCollapseSection: true` renders the group as a collapsible section in the docs site sidebar (hugo-book). Docs pages and skill files link to each other with editor-style relative paths, so count one extra `../` per nesting level (from `docs/languages/nix/{skill}/index.md`, the skill definition is `../../../skills/languages/nix/{skill}/SKILL.md`).
+`bookCollapseSection: true` renders the group as a collapsible section in the docs site sidebar (hugo-book). Docs pages and skill files link to each other with editor-style relative paths, so count one `../` per directory level below the repo root (from `docs/languages/nix/{skill}/index.md`, four levels deep, the skill definition is `../../../../skills/languages/nix/{skill}/SKILL.md`).
 
 Docs pages are `index.md` (not `README.md`) because they are mounted into the Hugo site as leaf bundles (see [Documentation site](#documentation-site)). Give each one front matter for the site:
 

@@ -18,6 +18,10 @@ Browse the full documentation at **[skills.mikekusold.com](https://skills.mikeku
 - **[wiki-ingest](docs/wiki-ingest/index.md)** — Add sources to an LLM-maintained wiki, preserving provenance and flagging conflicting claims.
 - **[wiki-query](docs/wiki-query/index.md)** — Answer questions from wiki evidence and optionally save durable analyses.
 - **[wiki-lint](docs/wiki-lint/index.md)** — Check wiki links, coverage, and consistency, then apply authorized fixes.
+- **Nix** — flake authoring and maintenance (`skills/languages/nix/`):
+  - **[nix-flake-parts](docs/languages/nix/nix-flake-parts/index.md)** — Expert guidance for the flake-parts framework: `mkFlake`, `perSystem`, overlays, and reusable flakeModules.
+  - **[nix-dendritic-flake](docs/languages/nix/nix-dendritic-flake/index.md)** — Convert flakes to the dendritic pattern where every file is a top-level module.
+  - **[nix-module-options](docs/languages/nix/nix-module-options/index.md)** — Query upstream NixOS and Home Manager module options with `nix eval`.
 
 ## Installation
 
@@ -39,12 +43,14 @@ After installation, invoke a skill by name or let your agent select it for a rel
 
 ```
 skills/
-  {skill-name}/           # the skill itself
+  {skill-name}/           # the skill itself (flat, or grouped: {group}/{skill-name}/)
     SKILL.md              # Instructions for the agent
     scripts/              # Helper scripts for automation (optional)
     references/           # Supporting documentation (optional)
 docs/
-  {skill-name}/
+  {skill-name}/           # mirrors skills/ one-to-one
+  {group}/_index.md       # group index (collapsible section on the docs site)
+  {group}/{skill-name}/
     index.md              # extended documentation for the skill (rendered on the docs site)
 ```
 

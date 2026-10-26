@@ -65,4 +65,4 @@ npx skills add kusold/agent-skills --skill nix-module-options
 
 ## Full Command Reference
 
-See [skills/nix-module-options/SKILL.md](../../skills/nix-module-options/SKILL.md) for both backend expressions, the query catalog (existence checks, option docs, and category listings for Home Manager and NixOS), common option categories, documentation fields, and troubleshooting that the agent loads when this skill is active.
+See [skills/nix-module-options/SKILL.md](../../../../skills/languages/nix/nix-module-options/SKILL.md) for both backend expressions, the query catalog (existence checks, option docs, and category listings for Home Manager and NixOS), common option categories, documentation fields, and troubleshooting that the agent loads when this skill is active.

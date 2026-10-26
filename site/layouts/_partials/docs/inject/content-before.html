@@ -1,8 +1,9 @@
-{{- /* Injected above docs/{skill}/ pages: GitHub mark + repo path linking to
-       the skill directory in the repo. Rendered only when the docs page has
-       a matching skills/{name}/SKILL.md content page. */ -}}
+{{- /* Injected above docs/ skill pages (flat or nested, e.g.
+       docs/languages/nix/{skill}/): GitHub mark + repo path linking to the
+       skill directory in the repo. Rendered only when the docs page has a
+       matching skills/{path}/SKILL.md content page. */ -}}
 {{- with .File -}}
-  {{- $match := findRESubmatch `^docs/([^/]+)/index\.md$` .Path 1 -}}
+  {{- $match := findRESubmatch `^docs/(.+)/index\.md$` .Path 1 -}}
   {{- with $match -}}
     {{- $name := index (index . 0) 1 -}}
     {{- if $.Site.GetPage (printf "skills/%s/SKILL.md" $name) -}}

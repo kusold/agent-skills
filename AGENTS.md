@@ -12,14 +12,29 @@ A collection of agent skills following the [Agent Skills](https://agentskills.io
 
 ```
 skills/
-  {skill-name}/           # kebab-case directory name
+  {skill-name}/           # kebab-case directory name (flat skills)
+  {group}/{skill-name}/   # or grouped by category (e.g. languages/nix/)
     SKILL.md              # Required: skill definition with YAML frontmatter
 docs/
   {skill-name}/
-    index.md              # mirrors skills/ — one directory per skill
+  {group}/{skill-name}/   # docs/ mirrors skills/ one-to-one
+  {group}/_index.md       # group index page (collapsible section on the site)
 ```
 
 Every skill in `skills/{skill-name}/` has a corresponding `docs/{skill-name}/` directory for extended documentation (design notes, usage guides, etc.). When adding a new skill, create both directories; keep the names in sync.
+
+Skills may be grouped into category directories (e.g. `skills/languages/nix/`); the `docs/` tree mirrors the nesting exactly. Each `docs/` group directory gets an `_index.md` branch bundle (not `index.md` — it is a section, not a leaf bundle) with front matter:
+
+```markdown
+---
+title: {Group Title}
+description: {One-line summary}
+weight: {order relative to sibling entries}
+bookCollapseSection: true
+---
+```
+
+`bookCollapseSection: true` renders the group as a collapsible section in the docs site sidebar (hugo-book). Docs pages and skill files link to each other with editor-style relative paths, so count one extra `../` per nesting level (from `docs/languages/nix/{skill}/index.md`, the skill definition is `../../../skills/languages/nix/{skill}/SKILL.md`).
 
 Docs pages are `index.md` (not `README.md`) because they are mounted into the Hugo site as leaf bundles (see [Documentation site](#documentation-site)). Give each one front matter for the site:
 

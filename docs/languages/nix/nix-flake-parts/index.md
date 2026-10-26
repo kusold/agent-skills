@@ -70,13 +70,13 @@ Or install all skills from this repository with `npx skills add kusold/agent-ski
 
 Four focused guides ship alongside the skill definition, loaded on demand when the task needs more than the essentials:
 
-- [module-arguments.md](../../skills/nix-flake-parts/module-arguments.md) — complete reference for every module argument, the `@` pattern, and function signature inspection
-- [overlays.md](../../skills/nix-flake-parts/overlays.md) — easyOverlay in depth: selective `overlayAttrs`, the `final` vs `pkgs` distinction, and common pitfalls
-- [modular-organization.md](../../skills/nix-flake-parts/modular-organization.md) — `importApply` patterns, reusable `flakeModules`, dogfooding, and module file structures
-- [advanced.md](../../skills/nix-flake-parts/advanced.md) — partitions, custom flake outputs, debug mode, `allSystems`, and migration from standard flakes
+- [module-arguments.md](../../../skills/languages/nix/nix-flake-parts/module-arguments.md) — complete reference for every module argument, the `@` pattern, and function signature inspection
+- [overlays.md](../../../skills/languages/nix/nix-flake-parts/overlays.md) — easyOverlay in depth: selective `overlayAttrs`, the `final` vs `pkgs` distinction, and common pitfalls
+- [modular-organization.md](../../../skills/languages/nix/nix-flake-parts/modular-organization.md) — `importApply` patterns, reusable `flakeModules`, dogfooding, and module file structures
+- [advanced.md](../../../skills/languages/nix/nix-flake-parts/advanced.md) — partitions, custom flake outputs, debug mode, `allSystems`, and migration from standard flakes
 
 If your goal is the specific architecture where *every* file (except entry points like `flake.nix`) is a top-level flake-parts module, see the companion [nix-dendritic-flake](../nix-dendritic-flake/) skill. To query what options upstream NixOS or Home Manager modules expose, see [nix-module-options](../nix-module-options/).
 
 ## Full Skill Reference
 
-See [skills/nix-flake-parts/SKILL.md](../../skills/nix-flake-parts/SKILL.md) for the complete guide (mkFlake structure, perSystem options, module arguments, conversion with safety guardrails, best practices, debugging, and common issues, with pointers to the four focused guides) that the agent loads when this skill is active.
+See [skills/nix-flake-parts/SKILL.md](../../../skills/languages/nix/nix-flake-parts/SKILL.md) for the complete guide (mkFlake structure, perSystem options, module arguments, conversion with safety guardrails, best practices, debugging, and common issues, with pointers to the four focused guides) that the agent loads when this skill is active.

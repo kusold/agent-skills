@@ -123,4 +123,4 @@ This skill is one of three interoperating wiki skills in this collection:
 
 ## Full Skill Definition
 
-See [skills/wiki-ingest/SKILL.md](../../../../skills/llm-wiki/wiki-ingest/SKILL.md) for the complete agent instructions (default wiki layout, page and index/log formats, contradiction handling, and edge cases) that the agent loads when this skill is active.
+See [skills/wiki-ingest/SKILL.md](../../../skills/llm-wiki/wiki-ingest/SKILL.md) for the complete agent instructions (default wiki layout, page and index/log formats, contradiction handling, and edge cases) that the agent loads when this skill is active.

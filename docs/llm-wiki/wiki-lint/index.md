@@ -62,7 +62,7 @@ Findings are prioritized as correctness, drift, hygiene, then growth opportuniti
 
 ## Skill and regression tests
 
-See [the full skill definition](../../../../skills/llm-wiki/wiki-lint/SKILL.md) for the workflow and authorization boundaries, and [the checker](../../../../skills/llm-wiki/wiki-lint/scripts/check_wiki.py) for the mechanical implementation.
+See [the full skill definition](../../../skills/llm-wiki/wiki-lint/SKILL.md) for the workflow and authorization boundaries, and [the checker](../../../skills/llm-wiki/wiki-lint/scripts/check_wiki.py) for the mechanical implementation.
 
 Run the isolated fixture tests from a checkout:
 

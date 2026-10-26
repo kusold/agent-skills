@@ -2,7 +2,10 @@
 name: nix-flake-parts
 description: Expert guidance for the flake-parts framework in Nix flakes. Use when converting flakes to flake-parts ("convert my flake to flake-parts"), organizing modular flake configurations, working with perSystem ("how do perSystem and flake differ?"), creating reusable flake modules, handling overlays, or debugging flake-parts issues ("why is `final` undefined", "argument 'pkgs' missing"). For the architecture where every file is a top-level module, use nix-dendritic-flake.
 metadata:
-  source: https://raw.githubusercontent.com/Omegaice/dotfiles/refs/heads/master/.claude/skills/using-flake-parts/SKILL.md
+  credits:
+    skill: using-flake-parts
+    author: Omegaice
+    url: "https://github.com/Omegaice/dotfiles/blob/master/.claude/skills/using-flake-parts/SKILL.md"
 ---
 
 # Flake-Parts Expert

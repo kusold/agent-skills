@@ -66,6 +66,21 @@ description: {One sentence describing when to use this skill. Include trigger ph
 - `name`: Unique identifier (lowercase, hyphens allowed)
 - `description`: Brief explanation of what the skill does and when to use it
 
+### Crediting Upstream Skills
+
+Skills derived from or heavily inspired by an upstream skill carry a `metadata.credits` block (format from [mattpocock/skills](https://github.com/mattpocock/skills/blob/main/skills/engineering/pr/SKILL.md)):
+
+```yaml
+metadata:
+  credits:
+    skill: {upstream skill name}
+    author: {person}
+    organisation: {organisation} # omit for individual authors
+    url: "{link to the upstream skill}"
+```
+
+When the upstream inspiration is a document rather than a skill (for example, a pattern README), name the project in `skill:` and link the document that defines it.
+
 ### Best Practices
 
 - Keep SKILL.md concise — it loads into the agent's context when activated

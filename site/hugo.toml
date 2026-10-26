@@ -34,8 +34,8 @@ disableKinds = ['taxonomy', 'term']
     target = 'content/skills'
   # Publish the bundled wiki-lint scripts so docs can link to the raw files.
   [[module.mounts]]
-    source = '../skills/wiki-lint/scripts'
-    target = 'static/skills/wiki-lint/scripts'
+    source = '../skills/llm-wiki/wiki-lint/scripts'
+    target = 'static/skills/llm-wiki/wiki-lint/scripts'
 
 [markup.goldmark.renderer]
   # Needed by the theme's shortcodes (mermaid, katex, tabs).

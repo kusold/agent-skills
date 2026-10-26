@@ -2,7 +2,10 @@
 name: nix-dendritic-flake
 description: Convert Nix flakes to the dendritic pattern with flake-parts, where every file is a top-level module. Use when adopting dendritic architecture, restructuring NixOS/home-manager/nix-darwin configurations into feature-named modules, or replacing specialArgs with shared top-level options. Activates for queries like "convert to dendritic", "every file is a module", "organize my nix config", or "replace specialArgs with options". For general flake-parts mechanics (perSystem, overlays, module arguments), use the nix-flake-parts skill instead.
 metadata:
-  source: https://github.com/mightyiam/dendritic
+  credits:
+    skill: dendritic
+    author: Shahar "Dawn" Or
+    url: "https://github.com/mightyiam/dendritic/blob/master/README.md"
 ---
 
 # Dendritic Flake Conversion

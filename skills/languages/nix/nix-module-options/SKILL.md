@@ -2,7 +2,10 @@
 name: nix-module-options
 description: Query NixOS and Home Manager module options programmatically using flake evaluation. Works in any flake with a nixpkgs input; flake-parts flakes with debug = true additionally reuse your overlay-aware pkgs. Use this skill when the user asks to check if a module exists, explore available options, get option documentation, or verify what options are available in upstream NixOS/Home Manager (not custom user modules). Activates for queries like "does home manager have a module for X", "what options does service Y have", "check nixos options for Z", or "explore available options".
 metadata:
-  source: https://github.com/Omegaice/dotfiles/blob/master/.claude/skills/nix-module-options/SKILL.md
+  credits:
+    skill: nix-module-options
+    author: Omegaice
+    url: "https://github.com/Omegaice/dotfiles/blob/master/.claude/skills/nix-module-options/SKILL.md"
   version: "1.1.0"
 ---
 

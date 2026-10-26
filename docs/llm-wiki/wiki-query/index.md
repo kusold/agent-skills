@@ -44,7 +44,7 @@ The shared [wiki layout](../wiki-ingest/) includes `domains/` and nested `projec
 
 ## Full Workflow Reference
 
-See [skills/wiki-query/SKILL.md](../../skills/wiki-query/SKILL.md) for the complete workflow, default wiki layout, analysis-page and log-entry formats, and edge cases that the agent loads when this skill is active.
+See [skills/wiki-query/SKILL.md](../../../../skills/llm-wiki/wiki-query/SKILL.md) for the complete workflow, default wiki layout, analysis-page and log-entry formats, and edge cases that the agent loads when this skill is active.
 
 ## Sibling skills
 

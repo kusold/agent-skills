@@ -41,13 +41,13 @@ The bundled Python 3.10+ checker is read-only and uses only the standard library
 From a repository checkout, run:
 
 ```bash
-python3 -B skills/wiki-lint/scripts/check_wiki.py /path/to/wiki-root
+python3 -B skills/llm-wiki/wiki-lint/scripts/check_wiki.py /path/to/wiki-root
 ```
 
 For a custom layout:
 
 ```bash
-python3 -B skills/wiki-lint/scripts/check_wiki.py /path/to/wiki-root \
+python3 -B skills/llm-wiki/wiki-lint/scripts/check_wiki.py /path/to/wiki-root \
   --wiki-dir knowledge --raw-dir material --index knowledge/catalog.md \
   --hub knowledge/activity.md --hub knowledge/synthesis.md
 ```
@@ -62,12 +62,12 @@ Findings are prioritized as correctness, drift, hygiene, then growth opportuniti
 
 ## Skill and regression tests
 
-See [the full skill definition](../../skills/wiki-lint/SKILL.md) for the workflow and authorization boundaries, and [the checker](../../skills/wiki-lint/scripts/check_wiki.py) for the mechanical implementation.
+See [the full skill definition](../../../../skills/llm-wiki/wiki-lint/SKILL.md) for the workflow and authorization boundaries, and [the checker](../../../../skills/llm-wiki/wiki-lint/scripts/check_wiki.py) for the mechanical implementation.
 
 Run the isolated fixture tests from a checkout:
 
 ```bash
-python3 -B -m unittest discover -s skills/wiki-lint/scripts -p 'test_*.py' -v
+python3 -B -m unittest discover -s skills/llm-wiki/wiki-lint/scripts -p 'test_*.py' -v
 ```
 
 Sibling skills: **wiki-ingest** adds sources and maintains wiki pages; **wiki-query** answers questions with citations and can save durable analyses.

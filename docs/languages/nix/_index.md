@@ -1,7 +1,7 @@
 ---
 title: 'Nix'
 description: 'Skills for writing and maintaining Nix flakes: converting to flake-parts, adopting the dendritic pattern, and exploring module options.'
-weight: 55
+weight: 10
 bookCollapseSection: true
 ---
 

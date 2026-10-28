@@ -16,6 +16,8 @@ Browse the full documentation at **[skills.mikekusold.com](https://skills.mikeku
   - **[wiki-ingest](docs/llm-wiki/wiki-ingest/index.md)** — Add sources to an LLM-maintained wiki, preserving provenance and flagging conflicting claims.
   - **[wiki-query](docs/llm-wiki/wiki-query/index.md)** — Answer questions from wiki evidence and optionally save durable analyses.
   - **[wiki-lint](docs/llm-wiki/wiki-lint/index.md)** — Check wiki links, coverage, and consistency, then apply authorized fixes.
+- **Software Development** — software design and maintenance (`skills/software-development/`):
+  - **[architectural-decision-records](docs/software-development/architectural-decision-records/index.md)** — Record architectural choices, evidence, and tradeoffs using MADR and project conventions.
 - **Nix** — flake authoring and maintenance (`skills/languages/nix/`):
   - **[nix-flake-parts](docs/languages/nix/nix-flake-parts/index.md)** — Expert guidance for the flake-parts framework: `mkFlake`, `perSystem`, overlays, and reusable flakeModules.
   - **[nix-dendritic-flake](docs/languages/nix/nix-dendritic-flake/index.md)** — Convert flakes to the dendritic pattern where every file is a top-level module.

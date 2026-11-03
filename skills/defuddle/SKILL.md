@@ -21,6 +21,24 @@ npx --yes defuddle@0.19.5 parse <source>
 
 A locally installed `defuddle` is fine for one-off extractions; record its version when the output is kept.
 
+## Choose where to save
+
+For an article extraction or snapshot request (including a bare invocation with a URL), save a Markdown file with frontmatter by default. Requests only to read, summarize, or inspect metadata do not require a saved file.
+
+1. Honor an explicit output path or a destination supplied by the calling workflow.
+2. Otherwise, read applicable repository instructions and look for `_inbox/` in the current directory or at the current repository root. If it exists, save the result there, including when invoked from a repository subdirectory.
+3. If neither has an `_inbox/`, save in the current directory. Do not create an inbox or use a temporary directory as the final destination unless requested.
+
+Use a descriptive kebab-case filename based on the article title or URL, such as `_inbox/pi-durable.md`. Check for an existing file before writing; add a date or unique suffix on collision rather than overwriting it. Temporary files are fine for discovery and validation, but deliver the verified snapshot at the selected destination and report its final path.
+
+For example, from a repository root containing `_inbox/`, after confirming the filename is available:
+
+```bash
+npx --yes defuddle@0.19.5 parse https://flaviocopes.com/pi-durable/ --frontmatter --markdown --output _inbox/pi-durable.md
+```
+
+Saving in `_inbox/` queues the source; it does not authorize wiki ingestion, wiki page edits, or a commit.
+
 ## Choose the output format
 
 | Need | Command |

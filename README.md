@@ -54,6 +54,49 @@ docs/
     index.md              # extended documentation for the skill (rendered on the docs site)
 ```
 
+## Counting skill tokens
+
+Run the token counter with [uv](https://docs.astral.sh/uv/), which installs its
+pinned `tiktoken` dependency in an isolated environment:
+
+```bash
+uv run scripts/count_skill_tokens.py
+uv run scripts/count_skill_tokens.py --include-supporting
+uv run scripts/count_skill_tokens.py --encoding cl100k_base --json
+uv run scripts/count_skill_tokens.py --include-supporting --markdown
+```
+
+By default, the tool recursively finds each `SKILL.md` beneath `skills/`, including
+grouped skills such as `skills/languages/nix/nix-flake-parts/SKILL.md`, and counts its
+complete text, including YAML frontmatter and whitespace, with the `o200k_base`
+encoding. Use `--skills-dir PATH`
+to scan another collection. The default path works from any working directory.
+
+`--include-supporting` also counts UTF-8 text files recursively within each skill,
+including reference documents and scripts. It excludes hidden files/directories
+and `__pycache__`, reports skipped binary or non-UTF-8 files, and rejects symlinked
+files. Totals sum the counts of individual files; docs outside `skills/` are excluded.
+Reports identify skills by their path relative to `skills/`. Nested skill packages
+are counted separately rather than included in a parent skill's supporting files.
+JSON output includes a per-file breakdown.
+
+The **Skill token counts** GitHub Actions workflow runs on relevant pull requests,
+pushes to `main`, and manual dispatch. Its run summary contains a Markdown table
+with each skill's `SKILL.md`, supporting-file, and total token counts, plus overall
+totals. It uses `o200k_base` and includes supporting text files.
+
+These are source-text counts for the selected tokenizer, not measured context
+usage or API billing. Hosts may load only metadata during discovery and load
+instructions or references later. Other model families can use different
+tokenizers. Counting runs locally without an API key; the first run needs network
+access to download dependencies and tokenizer data.
+
+Run the counter's regression tests with:
+
+```bash
+uv run --with tiktoken==0.12.0 python -m unittest discover -s scripts
+```
+
 ## License
 
 MIT

@@ -20,6 +20,7 @@ Extract the readable content of a web page with [defuddle](https://github.com/ke
 - Parses a URL, a local HTML file, or stdin (`defuddle parse -`)
 - Outputs Markdown (`--markdown`), full metadata JSON (`--json`), or a single field (`--property wordCount` — camelCase, matching the JSON keys)
 - Prepends YAML frontmatter (`title`, `site`, `source`, `domain`, `language`, `word_count`) with `--frontmatter`; combined with `--markdown --output <file>` this writes a complete page snapshot in one step
+- Saves article extractions to an existing `_inbox/` in the current directory or repository root by default, falling back to the current directory; explicit output paths and calling-workflow destinations take precedence
 - Retries blocked fetches with a custom user agent (`--user-agent`); accepts a language hint with `--lang`
 
 ## Usage
@@ -39,6 +40,8 @@ What's the publish date and author of this article?
 ```
 
 The skill treats each extraction as a claim to verify: fetch errors print but exit 0, so the output is checked directly; empty bodies, login walls, and paywall stubs are reported as failed extractions instead of being summarized as the source. JavaScript-rendered pages that return little content are named as a limitation, with a fallback attempted before giving up.
+
+For example, invoking `defuddle https://flaviocopes.com/pi-durable/` from a repository with `_inbox/` saves the verified snapshot as `_inbox/pi-durable.md` (or a distinct filename if that already exists). Temporary files may support extraction checks, but are not the default final destination. Saving an inbox source does not ingest it into the wiki or commit changes. Read-only and metadata-only requests do not require a saved file.
 
 Defuddle is an external dependency (npm package `defuddle`). Agents run it via `npx --yes defuddle@<version>` with a pinned version when reproducibility matters, and record the version used when an extraction is kept. When defuddle feeds a wiki-ingest URL snapshot, wiki-ingest remains in charge of provenance, retrieval date, and commit discipline.
 

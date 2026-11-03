@@ -8,3 +8,4 @@ bookCollapseSection: true
 Skills for software development workflows, grouped under `skills/software-development/` in the repository.
 
 - [Architectural Decision Records](architectural-decision-records/) — record design choices, rationale, and consequences
+- [Jujutsu](jujutsu/) — use `jj` exclusively in `.jj` workspaces, describe before coding, and refine atomic commits

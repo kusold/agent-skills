@@ -18,6 +18,7 @@ Browse the full documentation at **[skills.mikekusold.com](https://skills.mikeku
   - **[wiki-lint](docs/llm-wiki/wiki-lint/index.md)** — Check wiki links, coverage, and consistency, then apply authorized fixes.
 - **Software Development** — software design and maintenance (`skills/software-development/`):
   - **[architectural-decision-records](docs/software-development/architectural-decision-records/index.md)** — Record architectural choices, evidence, and tradeoffs using MADR and project conventions.
+  - **[jujutsu](docs/software-development/jujutsu/index.md)** — Use Jujutsu exclusively in `.jj` workspaces with a describe-first workflow and atomic, refined commits.
 - **Nix** — flake authoring and maintenance (`skills/languages/nix/`):
   - **[nix-flake-parts](docs/languages/nix/nix-flake-parts/index.md)** — Expert guidance for the flake-parts framework: `mkFlake`, `perSystem`, overlays, and reusable flakeModules.
   - **[nix-dendritic-flake](docs/languages/nix/nix-dendritic-flake/index.md)** — Convert flakes to the dendritic pattern where every file is a top-level module.

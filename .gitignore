@@ -1,6 +1,7 @@
 .DS_Store
 .vercel
 .env*.local
+__pycache__/
 
 # Hugo build output
 /site/public/

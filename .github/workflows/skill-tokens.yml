@@ -1,0 +1,39 @@
+name: Skill token counts
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'skills/**'
+      - 'scripts/count_skill_tokens.py'
+      - 'scripts/test_count_skill_tokens.py'
+      - '.github/workflows/skill-tokens.yml'
+  pull_request:
+    paths:
+      - 'skills/**'
+      - 'scripts/count_skill_tokens.py'
+      - 'scripts/test_count_skill_tokens.py'
+      - '.github/workflows/skill-tokens.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  count:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@07a047e608db84b3d8c06cd9a7c7dcc9c355c18e # v10.3.2
+        with:
+          python-version: '3.12'
+
+      - name: Test token counter
+        run: uv run --with tiktoken==0.12.0 python -m unittest discover -s scripts
+
+      - name: Write token counts to run summary
+        run: uv run scripts/count_skill_tokens.py --include-supporting --markdown >> "$GITHUB_STEP_SUMMARY"
